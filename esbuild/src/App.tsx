@@ -1,22 +1,18 @@
 import * as esbuild from "esbuild-wasm";
 import { ReactElement, useState, useEffect } from "react";
 
-const esbuildConfig = {
-  worker: true,
-  wasmURL: "./node_modules/esbuild-wasm/esbuild.wasm",
-};
-
 export const App: React.FC = (): ReactElement => {
   const [input, setinput] = useState<string>("");
   const [code, setCode] = useState<string>("");
 
-  const startService = async (): Promise<void> => {
-    esbuild
-      .initialize(esbuildConfig)
-      .then((x) => console.log(x))
-      .catch((err) => console.log(err));
+  const startService = async () => {
+    await esbuild
+      .initialize({
+        worker: true,
+        wasmURL: "/esbuild.wasm",
+      })
+      .then((service) => console.log(service));
   };
-
   useEffect(() => {
     startService();
   }, []);
