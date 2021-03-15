@@ -1,1 +1,1 @@
-module.exports = "pranjal";
+export default "pranjal";
