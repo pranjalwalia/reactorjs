@@ -15,7 +15,7 @@ export const App: React.FC = (): ReactElement => {
     ref.current = true;
   };
 
-  useEffect(() => {
+  useEffect((): void => {
     startService();
   }, []);
 
