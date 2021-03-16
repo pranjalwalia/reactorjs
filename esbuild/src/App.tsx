@@ -1,10 +1,10 @@
 import { ReactElement, useState, useEffect, useRef } from "react";
 import * as esbuild from "esbuild-wasm";
+import { unpkgPathPlugin } from "./plugins/unpkg-path-plugin";
 
 export const App: React.FC = (): ReactElement => {
   const [input, setinput] = useState<string>("");
   const [code, setCode] = useState<string>("");
-
   const ref = useRef<any>();
 
   const startService = async (): Promise<void> => {
@@ -23,11 +23,14 @@ export const App: React.FC = (): ReactElement => {
     if (!ref.current) {
       return;
     }
-    const transpilation = await esbuild.transform(input, {
-      loader: "jsx",
-      target: "es2015",
+    const buildResult = await esbuild.build({
+      entryPoints: ["index.js"],
+      bundle: true,
+      write: false,
+      plugins: [unpkgPathPlugin()],
     });
-    setCode(transpilation.code);
+    const { outputFiles } = buildResult;
+    setCode(outputFiles[0].text);
   };
 
   return (
