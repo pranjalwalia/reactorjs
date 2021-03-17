@@ -12,7 +12,16 @@ export const transpile = async (
     options?: esbuild.TransformOptions | undefined
 ): Promise<esbuild.TransformResult> => {
     try {
-        const buildResult = await esbuild.transform(input, options);
+        const transpilationResult = await esbuild.transform(input, options);
+        return transpilationResult;
+    } catch (err) {
+        return err.message;
+    }
+};
+
+export const buildSystem = async (options: esbuild.BuildOptions): Promise<esbuild.BuildResult> => {
+    try {
+        const buildResult = await esbuild.build(options);
         return buildResult;
     } catch (err) {
         return err.message;
