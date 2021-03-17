@@ -1,5 +1,5 @@
 import React, { ReactElement, useState, useEffect, useRef } from 'react';
-import { startService, transpile } from '../services/engine/buildEngine';
+import { startService, transpile, buildSystem } from '../services/engine/buildEngine';
 
 export const App: React.FC = (): ReactElement | null => {
     const [inputCode, setInputCode] = useState<string>('');
@@ -25,6 +25,14 @@ export const App: React.FC = (): ReactElement | null => {
                 console.log(`Transpilation failed with error: ${err.message}`);
                 return;
             });
+
+        buildSystem({
+            entryPoints: ['index.js'],
+            bundle: true,
+            write: false
+        })
+            .then(({ outputFiles }) => setBundledCode(outputFiles![0].text))
+            .catch((err) => console.log(err.message));
     };
 
     return (
