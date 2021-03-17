@@ -1,16 +1,16 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useState, useEffect } from 'react';
+import { startService } from '../services/engine/buildEngine';
 
 export const App: React.FC = (): ReactElement | null => {
     const [inputCode, setInputCode] = useState<string>('');
     const [bundledCode, setBundledCode] = useState<string>('');
 
+    useEffect((): void => {
+        startService();
+    }, []);
+
     const startBundling = (e: React.MouseEvent<HTMLElement>) => {
-        if (!bundledCode) {
-            return;
-        }
-        const result = '';
-        setBundledCode(result);
-        console.log(bundledCode);
+        console.log(inputCode);
     };
 
     return (
