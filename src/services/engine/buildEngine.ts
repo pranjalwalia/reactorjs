@@ -3,7 +3,7 @@ import { engineConfig } from '../../config/buildEngineConfig';
 
 export const engine = esbuild;
 
-export const startService = async (): Promise<void> => {
+export const initializeService = async (): Promise<void> => {
     await esbuild.initialize(engineConfig);
 };
 

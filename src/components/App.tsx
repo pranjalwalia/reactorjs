@@ -1,5 +1,6 @@
 import React, { ReactElement, useState, useEffect, useRef } from 'react';
-import { startService, transpile, buildSystem } from '../services/engine/buildEngine';
+import { initializeService, transpile, buildSystem } from '../services/engine/buildEngine';
+import { unpkgBypassPathPlugin } from '../plugins/unkpg-bypass-path-plugin';
 
 export const App: React.FC = (): ReactElement | null => {
     const [inputCode, setInputCode] = useState<string>('');
@@ -7,11 +8,11 @@ export const App: React.FC = (): ReactElement | null => {
     const ref = useRef<any>();
 
     useEffect((): void => {
-        startService();
+        initializeService();
         ref.current = true;
     }, []);
 
-    const startBundling = (e: React.MouseEvent<HTMLElement>) => {
+    const startBundling = (e: React.MouseEvent<HTMLElement>): void => {
         if (!ref.current) {
             return;
         }
@@ -29,7 +30,8 @@ export const App: React.FC = (): ReactElement | null => {
         buildSystem({
             entryPoints: ['index.js'],
             bundle: true,
-            write: false
+            write: false,
+            plugins: [unpkgBypassPathPlugin()]
         })
             .then(({ outputFiles }) => setBundledCode(outputFiles![0].text))
             .catch((err) => console.log(err.message));
