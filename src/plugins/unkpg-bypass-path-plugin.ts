@@ -1,4 +1,5 @@
 import * as esbuild from 'esbuild-wasm';
+import axios from 'axios';
 
 export const unpkgBypassPathPlugin = (): {
     name: string;
@@ -28,6 +29,13 @@ export const unpkgBypassPathPlugin = (): {
                 }
             );
 
+            /**
+             *
+             * @param {Object} args buildEngine args
+             * @param {String} args.path unkpkg url to fetch module from
+             * @param {Object} args.namespace namespace context from buildEngine
+             *
+             */
             build.onLoad({ filter: /.*/ }, async (args: any) => {
                 console.log('onLoad', args);
 
@@ -40,6 +48,13 @@ export const unpkgBypassPathPlugin = (): {
             `
                     };
                 }
+                const { data } = await axios.get(args.path, {
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                });
+                console.log(data);
             });
         }
     };
