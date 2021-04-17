@@ -17,9 +17,16 @@ export const unpkgBypassPathPlugin = (): {
                     }
 
                     /**
-                     *
                      * Todo: Dedicated Path Resolution Algorithm Call
-                     */
+                     **/
+                    //* handles relative imports
+                    if (args.path.includes('./') || args.path.includes('../')) {
+                        const resolvedImporter = args.importer + '/';
+                        return {
+                            namespace: 'a',
+                            path: new URL(args.path, resolvedImporter).href
+                        };
+                    }
 
                     return {
                         //* Naive path resolution, add checks for nested imports
@@ -43,7 +50,7 @@ export const unpkgBypassPathPlugin = (): {
                     return {
                         loader: 'jsx',
                         contents: `
-                        const message = require('medium-test-pkg');
+                        const message = require('nested-test-pkg');
                         console.log(message);            `
                     };
                 }
