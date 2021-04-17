@@ -10,22 +10,20 @@ export const unpkgBypassPathPlugin = (): {
         setup(build: esbuild.PluginBuild) {
             build.onResolve(
                 { filter: /.*/ },
-                async (
-                    args: any
-                ): Promise<{
-                    path: any;
-                    namespace: string;
-                }> => {
+                async (args: any): Promise<any> => {
                     console.log('onResolve', args);
                     if (args.path === 'index.js') {
                         return { path: args.path, namespace: 'a' };
                     } else if (args.path === 'tiny-test-pkg') {
                         return {
-                            path: 'https://unkpg.com/tiny-test-pkg@1.0.0/index.js',
+                            path: 'https://unpkg.com/tiny-test-pkg@1.0.0/index.js',
                             namespace: 'a'
                         };
                     }
-                    return { path: args.path, namespace: 'a' };
+                    return {
+                        namespace: 'a',
+                        path: `https://unpkg.com/${args.path}`
+                    };
                 }
             );
 
@@ -43,18 +41,16 @@ export const unpkgBypassPathPlugin = (): {
                     return {
                         loader: 'jsx',
                         contents: `
-              import message from 'tiny-test-pkg';
-              console.log(message);
-            `
+                        import message from 'tiny-test-pkg';
+                        console.log(message);            `
                     };
                 }
-                const { data } = await axios.get(args.path, {
-                    headers: {
-                        'Access-Control-Allow-Origin': '*',
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    }
-                });
-                console.log(data);
+
+                const data = await axios.get(args.path).then(({ data }) => data);
+                return {
+                    loader: 'jsx',
+                    contents: data
+                };
             });
         }
     };
