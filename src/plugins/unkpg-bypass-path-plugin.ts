@@ -14,15 +14,10 @@ export const unpkgBypassPathPlugin = (): {
                     console.log('onResolve', args);
                     if (args.path === 'index.js') {
                         return { path: args.path, namespace: 'a' };
-                    } else if (args.path === 'tiny-test-pkg') {
-                        return {
-                            path: 'https://unpkg.com/tiny-test-pkg@1.0.0/index.js',
-                            namespace: 'a'
-                        };
                     }
                     return {
-                        namespace: 'a',
-                        path: `https://unpkg.com/${args.path}`
+                        path: `https://unpkg.com/${args.path}`,
+                        namespace: 'a'
                     };
                 }
             );
@@ -41,15 +36,21 @@ export const unpkgBypassPathPlugin = (): {
                     return {
                         loader: 'jsx',
                         contents: `
-                        import message from 'tiny-test-pkg';
+                        const message = require('tiny-test-pkg');
                         console.log(message);            `
                     };
                 }
 
-                const data = await axios.get(args.path).then(({ data }) => data);
+                let response;
+                try {
+                    let { data } = await axios.get(args.path);
+                    response = data;
+                } catch (err) {
+                    response = null;
+                }
                 return {
                     loader: 'jsx',
-                    contents: data
+                    contents: response
                 };
             });
         }
