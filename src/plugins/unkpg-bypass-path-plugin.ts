@@ -21,10 +21,9 @@ export const unpkgBypassPathPlugin = (): {
                      **/
                     //* handles relative imports
                     if (args.path.includes('./') || args.path.includes('../')) {
-                        const resolvedImporter = args.importer + '/';
                         return {
                             namespace: 'a',
-                            path: new URL(args.path, resolvedImporter).href
+                            path: new URL(args.path, `https://unpkg.com${args.resolveDir}/`).href
                         };
                     }
 
@@ -55,16 +54,12 @@ export const unpkgBypassPathPlugin = (): {
                     };
                 }
 
-                let response;
-                try {
-                    let { data } = await axios.get(args.path);
-                    response = data;
-                } catch (err) {
-                    response = null;
-                }
+                let { data, request } = await axios.get(args.path);
+
                 return {
                     loader: 'jsx',
-                    contents: response
+                    contents: data,
+                    resolveDir: new URL('./', request.responseURL).pathname
                 };
             });
         }
