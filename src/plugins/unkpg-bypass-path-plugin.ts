@@ -15,7 +15,14 @@ export const unpkgBypassPathPlugin = (): {
                     if (args.path === 'index.js') {
                         return { path: args.path, namespace: 'a' };
                     }
+
+                    /**
+                     *
+                     * Todo: Dedicated Path Resolution Algorithm Call
+                     */
+
                     return {
+                        //* Naive path resolution, add checks for nested imports
                         path: `https://unpkg.com/${args.path}`,
                         namespace: 'a'
                     };
@@ -36,7 +43,7 @@ export const unpkgBypassPathPlugin = (): {
                     return {
                         loader: 'jsx',
                         contents: `
-                        const message = require('tiny-test-pkg');
+                        const message = require('medium-test-pkg');
                         console.log(message);            `
                     };
                 }
