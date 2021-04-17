@@ -4,7 +4,7 @@ import { unpkgBypassPathPlugin } from '../plugins/unkpg-bypass-path-plugin';
 
 export const App: React.FC = (): ReactElement | null => {
     const [inputCode, setInputCode] = useState<string>('');
-    const [bundledCode, setBundledCode] = useState<string>('');
+    const [bundledCode, setBundledCode] = useState<string | null>('');
     const ref = useRef<any>();
 
     useEffect((): void => {
@@ -33,8 +33,10 @@ export const App: React.FC = (): ReactElement | null => {
             write: false,
             plugins: [unpkgBypassPathPlugin()]
         })
+            // trasnpiled output
             .then(({ outputFiles }) => setBundledCode(outputFiles![0].text))
-            .catch((err) => console.log(err.message));
+            // outputFiles is undefined
+            .catch((err) => setBundledCode(err.message));
     };
 
     return (

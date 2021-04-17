@@ -16,6 +16,14 @@ export const unpkgBypassPathPlugin = (): {
                     namespace: string;
                 }> => {
                     console.log('onResolve', args);
+                    if (args.path === 'index.js') {
+                        return { path: args.path, namespace: 'a' };
+                    } else if (args.path === 'tiny-test-pkg') {
+                        return {
+                            path: 'https://unkpg.com/tiny-test-pkg@1.0.0/index.js',
+                            namespace: 'a'
+                        };
+                    }
                     return { path: args.path, namespace: 'a' };
                 }
             );
@@ -27,14 +35,9 @@ export const unpkgBypassPathPlugin = (): {
                     return {
                         loader: 'jsx',
                         contents: `
-              import message from './message';
+              import message from 'tiny-test-pkg';
               console.log(message);
             `
-                    };
-                } else {
-                    return {
-                        loader: 'jsx',
-                        contents: 'export default "returned from plugin"'
                     };
                 }
             });
