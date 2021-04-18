@@ -31,7 +31,11 @@ export const App: React.FC = (): ReactElement | null => {
             entryPoints: ['index.js'],
             bundle: true,
             write: false,
-            plugins: [unpkgBypassPathPlugin()]
+            plugins: [unpkgBypassPathPlugin()],
+            define: {
+                global: 'window',
+                'process.env.NODE_ENV': '"production"'
+            }
         })
             // trasnpiled output
             .then(({ outputFiles }) => setBundledCode(outputFiles![0].text))
