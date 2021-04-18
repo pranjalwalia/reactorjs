@@ -1,14 +1,20 @@
 import * as esbuild from 'esbuild-wasm';
 import axios from 'axios';
+// import { cacheProvider } from '../services/cache';
 
 export const unpkgBypassPathPlugin = (): {
     name: string;
-    setup(build: esbuild.PluginBuild): void;
+    setup(builder: esbuild.PluginBuild): void;
 } => {
     return {
         name: 'unpkg-bypass-path-plugin',
-        setup(build: esbuild.PluginBuild) {
-            build.onResolve(
+        setup(builder: esbuild.PluginBuild) {
+            /**
+             *  - `setup` is only called "once" for every build operation
+             *  - initialize cache service layer here
+             */
+
+            builder.onResolve(
                 { filter: /.*/ },
                 async (args: any): Promise<any> => {
                     console.log('onResolve', args);
@@ -41,7 +47,7 @@ export const unpkgBypassPathPlugin = (): {
              * @param {Object} args.namespace namespace context from buildEngine
              *
              */
-            build.onLoad({ filter: /.*/ }, async (args: any) => {
+            builder.onLoad({ filter: /.*/ }, async (args: any) => {
                 console.log('onLoad', args);
 
                 if (args.path === 'index.js') {
