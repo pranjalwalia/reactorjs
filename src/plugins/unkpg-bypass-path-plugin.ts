@@ -28,7 +28,6 @@ export const unpkgBypassPathPlugin = (): {
                     }
 
                     return {
-                        //* Naive path resolution, add checks for nested imports
                         path: `https://unpkg.com/${args.path}`,
                         namespace: 'a'
                     };
@@ -49,8 +48,9 @@ export const unpkgBypassPathPlugin = (): {
                     return {
                         loader: 'jsx',
                         contents: `
-                        const message = require('nested-test-pkg');
-                        console.log(message);            `
+                        import React, {useEffect} from 'react'
+                        console.log('pranjal')
+                        `
                     };
                 }
 
