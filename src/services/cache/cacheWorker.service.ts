@@ -1,24 +1,27 @@
-/**
- * !component lifecycle
- *
- *  builder.onLoad(
- *      if(cached)
- *          load();
- *      else request_unpkg();
- * )
- *
- */
-
 import localforage from 'localforage';
+import { BuildResult, OnLoadResult } from 'esbuild-wasm';
 import { cacheDbConfig } from '../../constants/cacheServiceConfig';
-
 export class CacheService {
     _fileCache: LocalForage | any;
+
     constructor() {
-        this._fileCache = this._fileCache.bind(this);
+        this.initialize();
     }
+
     initialize = (): void => {
-        console.log('cache service init !!!');
         this._fileCache = localforage.createInstance(cacheDbConfig);
+        console.log(this._fileCache);
+    };
+
+    getModule = async (key: string): Promise<null | BuildResult> => {
+        const cachedResult = await this._fileCache.getItem(key);
+        if (cachedResult) {
+            return cachedResult;
+        }
+        return null;
+    };
+
+    cacheModule = async (key: string, value: OnLoadResult): Promise<void> => {
+        await this._fileCache.setItem(key, value);
     };
 }

@@ -1,6 +1,13 @@
 import * as esbuild from 'esbuild-wasm';
 import axios from 'axios';
-// import { cacheProvider } from '../services/cache';
+import { cacheProvider } from '../services/cache/index';
+
+const { cacheService } = cacheProvider;
+
+/**
+ *  - initialize cache service layer here
+ */
+cacheService.initialize();
 
 export const unpkgBypassPathPlugin = (): {
     name: string;
@@ -9,11 +16,6 @@ export const unpkgBypassPathPlugin = (): {
     return {
         name: 'unpkg-bypass-path-plugin',
         setup(builder: esbuild.PluginBuild) {
-            /**
-             *  - `setup` is only called "once" for every build operation
-             *  - initialize cache service layer here
-             */
-
             builder.onResolve(
                 { filter: /.*/ },
                 async (args: any): Promise<any> => {
@@ -54,20 +56,32 @@ export const unpkgBypassPathPlugin = (): {
                     return {
                         loader: 'jsx',
                         contents: `
-                        import React, {useEffect} from 'react-select';
+                        import React, {useEffect} from 'react@16.0.0';
                         import ReactDOM from 'react-dom';
-                        console.log('pranjal')
+                        console.log(react, useEffect, ReactDOM);
                         `
                     };
                 }
 
+                //* if cached => return file,
+                const cachedModule = await cacheService.getModule(args.path);
+                if (cachedModule) {
+                    console.log('module cached');
+                    return cachedModule;
+                }
+
+                //* else {request upkg, cache response and return responses }
                 let { data, request } = await axios.get(args.path);
 
-                return {
+                const fetchedModule: esbuild.OnLoadResult = {
                     loader: 'jsx',
                     contents: data,
                     resolveDir: new URL('./', request.responseURL).pathname
                 };
+
+                //* cache module and return unpkg response
+                await cacheService.cacheModule(args.path, fetchedModule);
+                return fetchedModule;
             });
         }
     };
