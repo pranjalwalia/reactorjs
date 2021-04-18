@@ -48,7 +48,8 @@ export const unpkgBypassPathPlugin = (): {
                     return {
                         loader: 'jsx',
                         contents: `
-                        import React, {useEffect} from 'react'
+                        import React, {useEffect} from 'react';
+                        import ReactDOM from 'react-dom';
                         console.log('pranjal')
                         `
                     };
