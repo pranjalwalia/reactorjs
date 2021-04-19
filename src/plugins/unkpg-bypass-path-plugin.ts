@@ -105,14 +105,22 @@ export const unpkgBypassPathPlugin = (payload: string): IPathPlugin => {
                     };
                 }
 
-                //* if cached => return file,
+                /**
+                 * Program Flow:
+                 *
+                 * if module is cached:
+                 *      return cachedResult
+                 * else:
+                 *      res = request_unpkg()
+                 *      cache(res)
+                 *      return res
+                 * **/
                 const cachedModule = await cacheService.getModule(args.path);
                 if (cachedModule) {
                     console.log('module cached');
                     return cachedModule;
                 }
 
-                //* else {request upkg, cache response and return responses }
                 let { data, request } = await axios.get(args.path);
 
                 const fetchedModule: esbuild.OnLoadResult = {
@@ -120,9 +128,8 @@ export const unpkgBypassPathPlugin = (payload: string): IPathPlugin => {
                     contents: data,
                     resolveDir: new URL('./', request.responseURL).pathname
                 };
-
-                //* cache module and return unpkg response
                 await cacheService.cacheModule(args.path, fetchedModule);
+
                 return fetchedModule;
             });
         }
