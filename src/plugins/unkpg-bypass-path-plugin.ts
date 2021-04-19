@@ -17,7 +17,7 @@ cacheService.initialize();
  * Interface: return type for esbuild bypass plugin
  * **/
 export interface IPathPlugin {
-    name: String;
+    name: string;
     setup(builder: esbuild.PluginBuild): void;
 }
 
