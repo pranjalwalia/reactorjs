@@ -9,7 +9,9 @@ const { cacheService } = cacheProvider;
  */
 cacheService.initialize();
 
-export const unpkgBypassPathPlugin = (): {
+export const unpkgBypassPathPlugin = (
+    payload: string
+): {
     name: string;
     setup(builder: esbuild.PluginBuild): void;
 } => {
@@ -55,11 +57,7 @@ export const unpkgBypassPathPlugin = (): {
                 if (args.path === 'index.js') {
                     return {
                         loader: 'jsx',
-                        contents: `
-                        import React, {useEffect} from 'react@16.0.0';
-                        import ReactDOM from 'react-dom';
-                        console.log(react, useEffect, ReactDOM);
-                        `
+                        contents: payload
                     };
                 }
 
