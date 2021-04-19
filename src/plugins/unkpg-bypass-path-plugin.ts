@@ -2,13 +2,19 @@ import * as esbuild from 'esbuild-wasm';
 import axios from 'axios';
 import { cacheProvider } from '../services/cache/index';
 
-const { cacheService } = cacheProvider;
-
 /**
- *  - initialize cache service layer here
+ *  Initialize Cache Service layer when esbuild.Build()
  */
+const { cacheService } = cacheProvider;
 cacheService.initialize();
 
+/**
+ * esbuild Module Path Import Bypass Plugin
+ * Description:
+ *      Intercept import paths so esbuild doesn't attempt to map them to a file system location.
+ *
+ * @param {String} payload: Input Code obtained from state of {App.js} (Input Cell)
+ * **/
 export const unpkgBypassPathPlugin = (
     payload: string
 ): {
@@ -17,26 +23,65 @@ export const unpkgBypassPathPlugin = (
 } => {
     return {
         name: 'unpkg-bypass-path-plugin',
-        setup(builder: esbuild.PluginBuild) {
-            builder.onResolve(
-                { filter: /.*/ },
-                async (args: any): Promise<any> => {
-                    console.log('onResolve', args);
-                    if (args.path === 'index.js') {
-                        return { path: args.path, namespace: 'a' };
-                    }
 
+        /**
+         * @param {builder: esbuild.PluginBuild}
+         * **/
+        setup(builder: esbuild.PluginBuild) {
+            /**
+             * Root Entry Resolver
+             * Filter: regex ("args.path === index.js")
+             *
+             * *Callback*:
+             * *Description* - executed on module resolution
+             * @param {Object} args buildEngine args
+             * @param {String} args.path unkpkg url to fetch module from
+             * @param {Object} args.namespace namespace context from buildEngine
+             * **/
+            builder.onResolve(
+                { filter: /(^index\.js$)/ },
+                async (args: any): Promise<any> => {
+                    return { path: args.path, namespace: 'a' };
+                }
+            );
+
+            /**
+             * Relative Import Resolver
+             * Filter: regex (args.path.includes('./') || args.path.includes('../'))
+             *
+             * *Callback*:
+             * *Description* - executed on module resolution
+             * @param {Object} args buildEngine args
+             * @param {String} args.path unkpkg url to fetch module from
+             * @param {Object} args.namespace namespace context from buildEngine
+             * **/
+            builder.onResolve(
+                { filter: /^\.+\// },
+                async (args: any): Promise<any> => {
                     /**
                      * Todo: Dedicated Path Resolution Algorithm Call
                      **/
                     //* handles relative imports
-                    if (args.path.includes('./') || args.path.includes('../')) {
-                        return {
-                            namespace: 'a',
-                            path: new URL(args.path, `https://unpkg.com${args.resolveDir}/`).href
-                        };
-                    }
+                    return {
+                        namespace: 'a',
+                        path: new URL(args.path, `https://unpkg.com${args.resolveDir}/`).href
+                    };
+                }
+            );
 
+            /**
+             * Main Module Import Resolver
+             * Filter: regex ('./')
+             *
+             * *Callback*:
+             * *Description* - executed on module resolution
+             * @param {Object} args buildEngine args
+             * @param {String} args.path unkpkg url to fetch module from
+             * @param {Object} args.namespace namespace context from buildEngine
+             * **/
+            builder.onResolve(
+                { filter: /.*/ },
+                async (args: any): Promise<any> => {
                     return {
                         path: `https://unpkg.com/${args.path}`,
                         namespace: 'a'
@@ -45,11 +90,9 @@ export const unpkgBypassPathPlugin = (
             );
 
             /**
-             *
              * @param {Object} args buildEngine args
              * @param {String} args.path unkpkg url to fetch module from
              * @param {Object} args.namespace namespace context from buildEngine
-             *
              */
             builder.onLoad({ filter: /.*/ }, async (args: any) => {
                 console.log('onLoad', args);
