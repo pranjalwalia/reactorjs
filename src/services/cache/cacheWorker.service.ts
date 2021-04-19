@@ -1,6 +1,6 @@
 import localforage from 'localforage';
 import { BuildResult, OnLoadResult } from 'esbuild-wasm';
-import { cacheDbConfig } from '../../constants/cacheServiceConfig';
+import { cacheDbConfig } from '../../config/cacheServiceConfig';
 export class CacheService {
     _fileCache: LocalForage | any;
 
