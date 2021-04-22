@@ -41,7 +41,7 @@ export const App: React.FC = (): ReactElement | null => {
                 'process.env.NODE_ENV': '"production"'
             }
         })
-            // trasnpiled output
+            // bundled output
             .then(({ outputFiles }) => setBundledCode(outputFiles![0].text))
             // outputFiles is undefined
             .catch((err) => setBundledCode(err.message));

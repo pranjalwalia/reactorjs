@@ -14,7 +14,7 @@ cacheService.initialize();
  *      Intercept import paths so esbuild doesn't attempt to map them to a file system location.
  *
  * @param {String} payload: Input Code obtained from state of {App.js} (Input Cell)
- * Interface: return type for esbuild bypass plugin
+ * @interface: return type for esbuild bypass plugin
  * **/
 export interface IPathPlugin {
     name: string;
