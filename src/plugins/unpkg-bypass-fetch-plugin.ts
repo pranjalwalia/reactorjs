@@ -48,17 +48,21 @@ export const unpkgBypassFetchPlugin = (payload: string): IPathPlugin => {
                  *      if module is cached, return it
                  *      else request, cache and return
                  * **/
-                const cachedModule = await cacheService.getModule(args.path);
-                if (cachedModule) {
-                    console.log('module cached');
-                    console.log(cachedModule);
-                    return cachedModule;
-                }
+                // const cachedModule = await cacheService.getModule(args.path);
+                // if (cachedModule) {
+                //     console.log('module cached');
+                //     console.log(Object.keys(cachedModule));
+                //     return cachedModule;
+                // }
 
                 let { data, request } = await axios.get(args.path);
 
+                // import 'bulma/css/bulma.css';
+                //* regex: matcher checks for '.css' in the end
+                //* apply `css` loader when required
+                const loader = args.path.match(/.css$/) ? 'css' : 'jsx';
                 const fetchedModule: esbuild.OnLoadResult = {
-                    loader: 'jsx',
+                    loader,
                     contents: data,
                     resolveDir: new URL('./', request.responseURL).pathname
                 };
