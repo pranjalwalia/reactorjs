@@ -1,6 +1,7 @@
 import React, { ReactElement, useState, useEffect, useRef } from 'react';
 import { initializeService, transpile, buildSystem } from '../services/engine/buildEngine';
 import { unpkgBypassPathPlugin } from '../plugins/unkpg-bypass-path-plugin';
+import { unpkgBypassFetchPlugin } from '../plugins/unpkg-bypass-fetch-plugin';
 
 // import React, {useEffect} from 'react@16.0.0';
 // import ReactDOM from 'react-dom';
@@ -35,13 +36,13 @@ export const App: React.FC = (): ReactElement | null => {
             entryPoints: ['index.js'],
             bundle: true,
             write: false,
-            plugins: [unpkgBypassPathPlugin(inputCode)],
+            plugins: [unpkgBypassPathPlugin(), unpkgBypassFetchPlugin(inputCode)], // opposite of webpack
             define: {
                 global: 'window',
                 'process.env.NODE_ENV': '"production"'
             }
         })
-            // trasnpiled output
+            // bundled output
             .then(({ outputFiles }) => setBundledCode(outputFiles![0].text))
             // outputFiles is undefined
             .catch((err) => setBundledCode(err.message));
