@@ -3,7 +3,7 @@ import axios from 'axios';
 import { cacheProvider } from '../services/cache/index';
 
 /**
- *  Initialize Cache Service layer when esbuild.Build()
+ *  Initialize Caching layer when when build engine starts bundling
  */
 const { cacheService } = cacheProvider;
 cacheService.initialize();
