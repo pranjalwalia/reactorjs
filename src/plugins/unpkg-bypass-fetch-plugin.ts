@@ -1,11 +1,7 @@
 import * as esbuild from 'esbuild-wasm';
 import axios from 'axios';
 import { cacheProvider } from '../services/cache/index';
-
-export interface IPathPlugin {
-    name: string;
-    setup(builder: esbuild.PluginBuild): void;
-}
+import { IEnginePlugin } from '../interfaces/IEnginePlugin';
 
 /**
  *  Initialize Cache Service layer when esbuild.Build()
@@ -21,7 +17,7 @@ cacheService.initialize();
  * @param {String} payload: Input Code from state of {App.js} (Input Cell)
  * @interface: return type for esbuild bypass plugin
  * **/
-export const unpkgBypassFetchPlugin = (payload: string): IPathPlugin => {
+export const unpkgBypassFetchPlugin = (payload: string): IEnginePlugin => {
     return {
         name: 'unpkg-bypass-fetch-plugin',
 
@@ -55,6 +51,7 @@ export const unpkgBypassFetchPlugin = (payload: string): IPathPlugin => {
                     return cachedModule;
                 }
 
+                // fetch the resolved module
                 let { data, request } = await axios.get(args.path);
 
                 const fetchedModule: esbuild.OnLoadResult = {

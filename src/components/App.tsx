@@ -32,7 +32,7 @@ export const App: React.FC<{}> = (): ReactElement | null => {
             entryPoints: ['index.js'],
             bundle: true,
             write: false,
-            plugins: [unpkgBypassPathPlugin(), unpkgBypassFetchPlugin(inputCode)], // opposite of webpack
+            plugins: [unpkgBypassPathPlugin(), unpkgBypassFetchPlugin(inputCode)],
             define: {
                 global: 'window',
                 'process.env.NODE_ENV': '"production"'
