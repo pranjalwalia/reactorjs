@@ -1,6 +1,7 @@
 import React, { ReactElement, useState, useEffect, useRef } from 'react';
 import { initializeService, transpile, buildSystem } from '../services/engine/buildEngine';
 import { unpkgBypassPathPlugin } from '../plugins/unkpg-bypass-path-plugin';
+import { unpkgBypassFetchPlugin } from '../plugins/unpkg-bypass-fetch-plugin';
 
 export const App: React.FC<{}> = (): ReactElement | null => {
     const [inputCode, setInputCode] = useState<string>('');
@@ -31,7 +32,7 @@ export const App: React.FC<{}> = (): ReactElement | null => {
             entryPoints: ['index.js'],
             bundle: true,
             write: false,
-            plugins: [unpkgBypassPathPlugin(inputCode)],
+            plugins: [unpkgBypassPathPlugin(), unpkgBypassFetchPlugin(inputCode)], // opposite of webpack
             define: {
                 global: 'window',
                 'process.env.NODE_ENV': '"production"'
