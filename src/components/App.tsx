@@ -2,11 +2,7 @@ import React, { ReactElement, useState, useEffect, useRef } from 'react';
 import { initializeService, transpile, buildSystem } from '../services/engine/buildEngine';
 import { unpkgBypassPathPlugin } from '../plugins/unkpg-bypass-path-plugin';
 
-// import React, {useEffect} from 'react@16.0.0';
-// import ReactDOM from 'react-dom';
-// console.log(react, useEffect, ReactDOM);
-
-export const App: React.FC = (): ReactElement | null => {
+export const App: React.FC<{}> = (): ReactElement | null => {
     const [inputCode, setInputCode] = useState<string>('');
     const [bundledCode, setBundledCode] = useState<string | null>('');
     const ref = useRef<any>();
