@@ -22,35 +22,46 @@ export const unpkgBypassPathPlugin = (): IEnginePlugin => {
         /**
          * @param {builder: esbuild.PluginBuild}
          * **/
-        setup(builder: esbuild.PluginBuild) {
+        setup: (builder: esbuild.PluginBuild) => {
             /**
-             * Root Entry Resolver
              * @description
              *  - Executed on module resolution
-             *  -
+             *  - `onResolve` callback executed on imports (args.path) that satisfy the filter
+             *
              * @param {object} args buildEngine args
              * @param {string} args.path unkpkg url to fetch module from
              * @param {string} args.namespace namespace context from buildEngine
              * @param {string} args.resolveDir attribute on `esbuild.OnLoadResult` (output after passing into a loader)
              *   describes the original dir where importer was found
              * **/
+
+            /**
+             * @description Root Entry (first resolve) Resolver
+             * - filter applied on args.path, here checks for `args.path === 'index.js'`
+             * */
+            builder.onResolve({ filter: /(^index\.js$)/ }, () => {
+                return { path: 'index.js', namespace: 'a' };
+            });
+
+            /**
+             * @description Relative Import ('./', '../') Resolver
+             * - filter applied on args.path,
+             * - here checks for `args.path.includes('./') || args.path.includes('../')`
+             *
+             * Todo: Dedicated Path Resolution Algorithm Call
+             **/
+            builder.onResolve({ filter: /^\.+\// }, async (args: any): Promise<any> => {
+                return {
+                    namespace: 'a',
+                    path: new URL(args.path, `https://unpkg.com${args.resolveDir}/`).href
+                };
+            });
+
+            /**
+             * @description Handle Main module Import
+             * - filter applied on args.path,
+             **/
             builder.onResolve({ filter: /.*/ }, async (args: any): Promise<any> => {
-                //* first resolve
-                if (args.path === 'index.js') {
-                    return { path: args.path, namespace: 'a' };
-                }
-
-                /**
-                 * Todo: Dedicated Path Resolution Algorithm Call
-                 **/
-                //* handle resolution of relative imports
-                if (args.path.includes('./') || args.path.includes('../')) {
-                    return {
-                        namespace: 'a',
-                        path: new URL(args.path, `https://unpkg.com${args.resolveDir}/`).href
-                    };
-                }
-
                 return {
                     path: `https://unpkg.com/${args.path}`,
                     namespace: 'a'

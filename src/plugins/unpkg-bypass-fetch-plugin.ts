@@ -24,7 +24,7 @@ export const unpkgBypassFetchPlugin = (payload: string): IEnginePlugin => {
         /**
          * @param {builder: esbuild.PluginBuild}
          * **/
-        setup(builder: esbuild.PluginBuild) {
+        setup: (builder: esbuild.PluginBuild) => {
             /**
              * @param {Object} args buildEngine args
              * @param {String} args.path unkpkg url to fetch module from
@@ -47,15 +47,17 @@ export const unpkgBypassFetchPlugin = (payload: string): IEnginePlugin => {
                 const cachedModule = await cacheService.getModule(args.path);
                 if (cachedModule) {
                     console.log('module cached');
-                    console.log(cachedModule);
+                    // console.log(cachedModule);
                     return cachedModule;
                 }
 
                 // fetch the resolved module
                 let { data, request } = await axios.get(args.path);
 
+                const moduleLoader = args.path.match(/.css$/) ? 'css' : 'jsx';
+
                 const fetchedModule: esbuild.OnLoadResult = {
-                    loader: 'jsx',
+                    loader: moduleLoader,
                     contents: data,
                     resolveDir: new URL('./', request.responseURL).pathname
                 };
