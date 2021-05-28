@@ -51,14 +51,38 @@ export const unpkgBypassFetchPlugin = (payload: string): IEnginePlugin => {
                     return cachedModule;
                 }
 
-                // fetch the resolved module
+                //* fetch the resolved module and it's extension
                 let { data, request } = await axios.get(args.path);
+                const moduleExtension = args.path.match(/.css$/) ? 'css' : 'jsx';
 
-                const moduleLoader = args.path.match(/.css$/) ? 'css' : 'jsx';
+                /**
+                 * @description Placeholder is '${data}'
+                 * - the data may interfere with '' and cause early string termination
+                 * - replace with escaped data sequence
+                 */
+                const escapedModuleContents = data
+                    .replace(/\n/g, '') //* concat all lines of code (minified by replacing '\n')
+                    .replace(/"/g, '\\"') //* transform double quote to escaped double quote
+                    .replace(/'/g, "\\'"); //* transform single quote to escaped single quote
 
+                const moduleContents =
+                    moduleExtension === 'css'
+                        ? `
+                    var style = document.createElement('style');
+                    style.innerText = '${escapedModuleContents}';
+                    document.head.appendChild(style)
+                `
+                        : data;
+
+                /**
+                 * @description set loader to `jsx` always
+                 * - css loader outputs into seperate css file,
+                 * - not refrenced during in-browser bundling
+                 * - fix for css: Append all css inside a style tag
+                 * */
                 const fetchedModule: esbuild.OnLoadResult = {
-                    loader: moduleLoader,
-                    contents: data,
+                    loader: 'jsx',
+                    contents: moduleContents,
                     resolveDir: new URL('./', request.responseURL).pathname
                 };
                 await cacheService.cacheModule(args.path, fetchedModule);
