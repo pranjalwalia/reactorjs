@@ -1,11 +1,11 @@
 import * as esbuild from 'esbuild-wasm';
-import { cacheProvider } from '../services/cache';
+// import { cacheProvider } from '../services/cache';
 import { IEnginePlugin } from '../interfaces/IEnginePlugin';
 /**
  *  Initialize Caching layer upon bundling
  */
-const { cacheService } = cacheProvider;
-cacheService.initialize();
+// const { cacheService } = cacheProvider;
+// cacheService.initialize();
 
 /**
  * `esbuild Module Path Import Bypass Plugin`

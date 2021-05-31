@@ -1,6 +1,6 @@
 import * as esbuild from 'esbuild-wasm';
 import axios from 'axios';
-import { cacheProvider } from '../services/cache/index';
+import { cacheProvider } from '../services/cache';
 import { IEnginePlugin } from '../interfaces/IEnginePlugin';
 
 /**
@@ -30,30 +30,43 @@ export const unpkgBypassFetchPlugin = (payload: string): IEnginePlugin => {
              * @param {String} args.path unkpkg url to fetch module from
              * @param {Object} args.namespace namespace context from buildEngine
              */
-            builder.onLoad({ filter: /.*/ }, async (args: any) => {
-                //* first load in execution context
-                if (args.path === 'index.js') {
-                    return {
-                        loader: 'jsx',
-                        contents: payload
-                    };
-                }
 
-                /**
-                 * @description
-                 *      if module is cached, return it
-                 *      else request, cache and return
-                 * **/
+            /**
+             * @description Root Entry (first resolve) Resolver
+             * - first load in execution context
+             * - filter applied on args.path, here checks for `args.path === 'index.js'`
+             * */
+            builder.onLoad({ filter: /(^index\.js$)/ }, async (args: any) => {
+                return {
+                    loader: 'jsx',
+                    contents: payload
+                };
+            });
+
+            /**
+             * @description module exists cache query called here
+             *  - `null` return of `builder.onLoad` just executes the code
+             *  - esbuild will match other `onLoad`'s till anyone returns something
+             *  - any subsequent calls to `onLoad`  will request and cache the result, as cache lookup fails in this `onLoad`
+             * @returns `null`
+             */
+            builder.onLoad({ filter: /.*/ }, async (args: any) => {
                 const cachedModule = await cacheService.getModule(args.path);
                 if (cachedModule) {
                     console.log('module cached');
                     // console.log(cachedModule);
                     return cachedModule;
                 }
+            });
 
+            /**
+             * @description Module Entry Resolver
+             * - filter applied on args.path, here checks for `args.path` ends with extension `.css`
+             * */
+            builder.onLoad({ filter: /.css$/ }, async (args: any) => {
                 //* fetch the resolved module and it's extension
+
                 let { data, request } = await axios.get(args.path);
-                const moduleExtension = args.path.match(/.css$/) ? 'css' : 'jsx';
 
                 /**
                  * @description Placeholder is '${data}'
@@ -65,14 +78,11 @@ export const unpkgBypassFetchPlugin = (payload: string): IEnginePlugin => {
                     .replace(/"/g, '\\"') //* transform double quote to escaped double quote
                     .replace(/'/g, "\\'"); //* transform single quote to escaped single quote
 
-                const moduleContents =
-                    moduleExtension === 'css'
-                        ? `
+                const moduleContents = `
                     var style = document.createElement('style');
                     style.innerText = '${escapedModuleContents}';
                     document.head.appendChild(style)
-                `
-                        : data;
+                `;
 
                 /**
                  * @description set loader to `jsx` always
@@ -85,8 +95,25 @@ export const unpkgBypassFetchPlugin = (payload: string): IEnginePlugin => {
                     contents: moduleContents,
                     resolveDir: new URL('./', request.responseURL).pathname
                 };
-                await cacheService.cacheModule(args.path, fetchedModule);
 
+                await cacheService.cacheModule(args.path, fetchedModule);
+                return fetchedModule;
+            });
+
+            /**
+             * @description Module Entry Resolver
+             * - filter applied on args.path, here checks for `args.path` for others apart from `css`
+             * */
+            builder.onLoad({ filter: /.*/ }, async (args: any) => {
+                //* fetch the resolved module and it's extension
+                let { data, request } = await axios.get(args.path);
+                const fetchedModule: esbuild.OnLoadResult = {
+                    loader: 'jsx',
+                    contents: data,
+                    resolveDir: new URL('./', request.responseURL).pathname
+                };
+
+                await cacheService.cacheModule(args.path, fetchedModule);
                 return fetchedModule;
             });
         }
