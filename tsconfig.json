@@ -1,9 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES5",
-    "module": "ESNext",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "module": "esnext",
     "moduleResolution": "node",
-    "lib": ["DOM", "ESNext"],
     "jsx": "react-jsx",
     "noEmit": true,
     "isolatedModules": true,
