@@ -18,7 +18,7 @@ export const App: React.FC<{}> = (): ReactElement | null => {
         inputCodeRef.current.focus();
     }, []);
 
-    const bundlerInitialize = async (e: React.MouseEvent<HTMLElement>): Promise<void> => {
+    const bundlerInitialize = async (): Promise<void> => {
         if (!inputCodeRef.current.value || !inputCodeRef.current) {
             return;
         }
@@ -73,17 +73,21 @@ export const App: React.FC<{}> = (): ReactElement | null => {
             <textarea
                 ref={inputCodeRef}
                 value={inputCode}
-                onChange={(e) => setInputCode(e.target.value)}></textarea>
+                onChange={(e) => {
+                    setInputCode(e.target.value);
+                }}></textarea>
             <div>
                 <button onClick={bundlerInitialize}>Submit</button>
             </div>
             {/* <pre>{bundledCode}</pre> */}
-            <iframe
-                ref={iFrameRef}
-                src="/frameSource.html"
-                title={iFrameTitle}
-                sandbox="allow-scripts"
-                srcDoc={iFramePayload}></iframe>
+            <div>
+                <iframe
+                    ref={iFrameRef}
+                    src="/frameSource.html"
+                    title={iFrameTitle}
+                    sandbox="allow-scripts"
+                    srcDoc={iFramePayload}></iframe>
+            </div>
         </div>
     );
 };
