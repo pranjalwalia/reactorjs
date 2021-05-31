@@ -6,6 +6,8 @@ import { unpkgBypassFetchPlugin } from '../plugins/unpkg-bypass-fetch-plugin';
 
 import { iFrameIdentifier } from '../utils/sandboxNameGenerator';
 
+import Editor from '../containers/CodeEditor';
+
 export const App: React.FC<{}> = (): ReactElement | null => {
     const [inputCode, setInputCode] = useState<string>('');
     const [transpiledCode, setTranspiledCode] = useState<string>('');
@@ -70,6 +72,9 @@ export const App: React.FC<{}> = (): ReactElement | null => {
 
     return (
         <div>
+            <div>
+                <Editor />
+            </div>
             <textarea
                 ref={inputCodeRef}
                 value={inputCode}
