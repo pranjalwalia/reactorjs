@@ -1,51 +1,75 @@
 {
-    "name": "reactorjs",
-    "version": "0.1.0",
-    "private": true,
-    "dependencies": {
-        "@testing-library/jest-dom": "^5.12.0",
-        "@testing-library/react": "^11.2.7",
-        "@testing-library/user-event": "^13.1.9",
-        "@types/jest": "^26.0.23",
-        "@types/node": "^15.6.1",
-        "@types/react": "^17.0.8",
-        "@types/react-dom": "^17.0.5",
-        "axios": "^0.21.1",
-        "esbuild-wasm": "^0.12.4",
-        "localforage": "^1.9.0",
-        "react": "^17.0.1",
-        "react-dom": "^17.0.1",
-        "react-scripts": "4.0.3",
-        "typescript": "^4.3.2"
-    },
-    "scripts": {
-        "start": "react-scripts start",
-        "build": "react-scripts build",
-        "fix:prettier": "prettier --write './src/**/*.{tsx,ts,js,jsx}'",
-        "test": "react-scripts test",
-        "eject": "react-scripts eject"
-    },
-    "eslintConfig": {
-        "extends": [
-            "react-app",
-            "react-app/jest"
-        ]
-    },
-    "browserslist": {
-        "production": [
-            ">0.2%",
-            "not dead",
-            "not op_mini all"
-        ],
-        "development": [
-            "last 1 chrome version",
-            "last 1 firefox version",
-            "last 1 safari version"
-        ]
-    },
-    "devDependencies": {
-        "@types/axios": "^0.14.0",
-        "@types/localforage": "^0.0.34",
-        "prettier": "^2.3.0"
+  "name": "react-typescript-webpack-starter",
+  "version": "1.0.0",
+  "description": "Starter template React-Typescript using Webpack 5",
+  "scripts": {
+    "build:dev": "webpack serve --config webpack/webpack.config.js --env env=dev",
+    "build:prod": "webpack --config webpack/webpack.config.js --env env=prod",
+    "fix:eslint": "eslint --fix \"./src/**/*.{js,jsx,ts,tsx,json}\"",
+    "fix:prettier": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
+    "fix:editorconf": "ec",
+    "clean": "rm -rf build",
+    "fix": "yarn fix:prettier && yarn fix:eslint && yarn fix:editorconf",
+    "test": "jest --forceExit",
+    "test:verbose": "jest --verbose",
+    "test:watch": "jest --watchAll"
+  },
+  "author": "Pranjal Walia <pranjalwalia77@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.16",
+    "@babel/plugin-transform-runtime": "^7.13.10",
+    "@babel/preset-env": "^7.12.16",
+    "@babel/preset-react": "^7.12.13",
+    "@babel/preset-typescript": "^7.12.16",
+    "@babel/runtime": "^7.13.10",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.4.3",
+    "@types/react": "^17.0.2",
+    "@types/react-dom": "^17.0.1",
+    "@typescript-eslint/eslint-plugin": "^4.15.0",
+    "@typescript-eslint/parser": "^4.15.0",
+    "babel-loader": "^8.2.2",
+    "clean-webpack-plugin": "^4.0.0-alpha.0",
+    "css-loader": "^5.0.2",
+    "editorconfig-checker": "^4.0.2",
+    "eslint": "^7.19.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-react": "^7.22.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "html-webpack-plugin": "^5.1.0",
+    "husky": "^6.0.0",
+    "lint-staged": "^11.0.0",
+    "prettier": "^2.2.1",
+    "react-refresh": "^0.10.0",
+    "style-loader": "^2.0.0",
+    "typescript": "^4.1.5",
+    "webpack": "^5.21.2",
+    "webpack-cli": "^4.5.0",
+    "webpack-dev-server": "^3.11.2",
+    "webpack-merge": "^5.7.3"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
     }
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx,json}": [
+      "eslint --fix"
+    ],
+    "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+      "prettier --write"
+    ],
+    "*": [
+      "ec"
+    ]
+  }
 }
