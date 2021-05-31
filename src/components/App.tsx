@@ -10,21 +10,20 @@ export const App: React.FC<{}> = (): ReactElement | null => {
     const [inputCode, setInputCode] = useState<string>('');
     const [transpiledCode, setTranspiledCode] = useState<string>('');
     const [bundledCode, setBundledCode] = useState<string | null>('');
-    const ref = useRef<any>();
-    // const frameRef = useRef<any>();
+    const inputCodeRef = useRef<any>();
+    const iFrameRef = useRef<any>();
 
     useEffect((): void => {
         initializeService();
-        ref.current = true;
+        inputCodeRef.current.focus();
     }, []);
 
     const bundlerInitialize = async (e: React.MouseEvent<HTMLElement>): Promise<void> => {
-        if (!ref.current) {
+        if (!inputCodeRef.current.value || !inputCodeRef.current) {
             return;
         }
-
         try {
-            const { code, warnings } = await transpile(inputCode, {
+            const { code } = await transpile(inputCode, {
                 loader: 'jsx',
                 target: 'es2015'
             });
@@ -36,7 +35,7 @@ export const App: React.FC<{}> = (): ReactElement | null => {
         }
 
         try {
-            const { outputFiles, warnings } = await buildSystem({
+            const { outputFiles } = await buildSystem({
                 entryPoints: ['index.js'],
                 bundle: true,
                 write: false,
@@ -47,24 +46,41 @@ export const App: React.FC<{}> = (): ReactElement | null => {
                 }
             });
             setBundledCode(outputFiles !== null ? outputFiles![0].text : null);
+            iFrameRef.current.contentWindow.postMessage(outputFiles![0].text, '*');
         } catch (err) {
             // outputFiles is undefined
-            setBundledCode(err.message);
+            console.log(err.message);
         }
     };
 
-    const iFramePayload: string = `<script> ${bundledCode} </script>`;
+    const iFramePayload: string = `
+    <html>
+        <head></head>
+        <body>
+            <div id="root">
+                <script>
+                    window.addEventListener('message', (event) => {
+                        eval(event.data);
+                    }, false)
+                </script>
+            </div>
+        </body>
+    </html>`;
     const iFrameTitle: string = `iframe-${iFrameIdentifier(iFramePayload.length % 123)}`;
 
     return (
         <div>
-            <textarea value={inputCode} onChange={(e) => setInputCode(e.target.value)}></textarea>
+            <textarea
+                ref={inputCodeRef}
+                value={inputCode}
+                onChange={(e) => setInputCode(e.target.value)}></textarea>
             <div>
                 <button onClick={bundlerInitialize}>Submit</button>
             </div>
-            <pre>{bundledCode}</pre>
+            {/* <pre>{bundledCode}</pre> */}
             <iframe
-                src="/test.html"
+                ref={iFrameRef}
+                src="/frameSource.html"
                 title={iFrameTitle}
                 sandbox="allow-scripts"
                 srcDoc={iFramePayload}></iframe>
