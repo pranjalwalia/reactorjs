@@ -17,17 +17,22 @@
   "author": "Pranjal Walia <pranjalwalia77@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.21.1",
+    "esbuild-wasm": "^0.12.6",
+    "localforage": "^1.9.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
+    "@babel/plugin-proposal-class-properties": "^7.13.0",
     "@babel/plugin-transform-runtime": "^7.13.10",
     "@babel/preset-env": "^7.12.16",
     "@babel/preset-react": "^7.12.13",
     "@babel/preset-typescript": "^7.12.16",
     "@babel/runtime": "^7.13.10",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.4.3",
+    "@types/axios": "^0.14.0",
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.1",
     "@typescript-eslint/eslint-plugin": "^4.15.0",
