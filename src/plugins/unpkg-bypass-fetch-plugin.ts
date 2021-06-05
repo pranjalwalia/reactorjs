@@ -39,7 +39,7 @@ export const unpkgBypassFetchPlugin = (payload: string): IEnginePlugin => {
       builder.onLoad({ filter: /(^index\.js$)/ }, async (_args: any) => {
         return {
           loader: 'jsx',
-          contents: payload,
+          contents: payload
         }
       })
 
@@ -93,7 +93,7 @@ export const unpkgBypassFetchPlugin = (payload: string): IEnginePlugin => {
         const fetchedModule: esbuild.OnLoadResult = {
           loader: 'jsx',
           contents: moduleContents,
-          resolveDir: new URL('./', request.responseURL).pathname,
+          resolveDir: new URL('./', request.responseURL).pathname
         }
 
         await cacheService.cacheModule(args.path, fetchedModule)
@@ -110,12 +110,12 @@ export const unpkgBypassFetchPlugin = (payload: string): IEnginePlugin => {
         const fetchedModule: esbuild.OnLoadResult = {
           loader: 'jsx',
           contents: data,
-          resolveDir: new URL('./', request.responseURL).pathname,
+          resolveDir: new URL('./', request.responseURL).pathname
         }
 
         await cacheService.cacheModule(args.path, fetchedModule)
         return fetchedModule
       })
-    },
+    }
   }
 }

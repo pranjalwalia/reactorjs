@@ -1,3 +1,3 @@
 export const cacheDbConfig = {
-  name: 'filecache',
+  name: 'filecache'
 }

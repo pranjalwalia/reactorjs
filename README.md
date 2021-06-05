@@ -1,16 +1,10 @@
-## Download the starter kit
+# ReactorJS
 
-npx degit https://github.com/gopinav/React-TypeScript-Webpack-Starter my-app
+Generate docs in realtime
 
-## Install dependencies
+## husky lint-staged
 
-cd my-app &&
-yarn
-
-## Run dev server
-
-yarn start
-
-## Build
-
-yarn build
+- `yarn add -D husky`
+- `npm set-script prepare "husky install" && yarn prepare`
+- `npx husky add .husky/pre-commit "yarn lint-staged"`
+- `git commit -m "added husky and lint-stagged"`

@@ -3,7 +3,7 @@ import React, { ReactElement, useState, useEffect, useRef } from 'react'
 import {
   initializeService,
   transpile,
-  buildSystem,
+  buildSystem
 } from '../services/engine/buildEngine'
 import { unpkgBypassPathPlugin } from '../plugins/unkpg-bypass-path-plugin'
 import { unpkgBypassFetchPlugin } from '../plugins/unpkg-bypass-fetch-plugin'
@@ -31,7 +31,7 @@ export const App: React.FC<
     try {
       const { code } = await transpile(inputCode, {
         loader: 'jsx',
-        target: 'es2015',
+        target: 'es2015'
       })
       console.log('Successfully Transpiled cell')
       setTranspiledCode(code)
@@ -48,8 +48,8 @@ export const App: React.FC<
         plugins: [unpkgBypassPathPlugin(), unpkgBypassFetchPlugin(inputCode)],
         define: {
           global: 'window',
-          'process.env.NODE_ENV': '"production"',
-        },
+          'process.env.NODE_ENV': '"production"'
+        }
       })
       setBundledCode(outputFiles !== undefined ? outputFiles[0].text : null)
       iFrameRef.current.contentWindow.postMessage(

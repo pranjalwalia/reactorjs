@@ -56,7 +56,7 @@ export const unpkgBypassPathPlugin = (): IEnginePlugin => {
           return {
             namespace: 'a',
             path: new URL(args.path, `https://unpkg.com${args.resolveDir}/`)
-              .href,
+              .href
           }
         }
       )
@@ -70,10 +70,10 @@ export const unpkgBypassPathPlugin = (): IEnginePlugin => {
         async (args: any): Promise<any> => {
           return {
             path: `https://unpkg.com/${args.path}`,
-            namespace: 'a',
+            namespace: 'a'
           }
         }
       )
-    },
+    }
   }
 }
