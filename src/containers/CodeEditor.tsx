@@ -1,5 +1,8 @@
 import MonacoEditor from '@monaco-editor/react';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import { useRef } from 'react';
+import prettier from 'prettier';
+import parser from 'prettier/parser-babel';
 
 export interface IEditorProps {
     initialValue: string;
@@ -10,33 +13,61 @@ const Editor: React.FC<IEditorProps> = ({
     initialValue,
     executableCodeOnChangeHandler
 }: IEditorProps) => {
+    const editorContentRef = useRef<any>();
+    const editorRef = useRef<any>();
+
     const editorOnChangeHandler = (
         value: string | undefined,
         ev: monaco.editor.IModelContentChangedEvent
     ) => {
         if (value) {
+            editorContentRef.current = value;
             executableCodeOnChangeHandler(value);
         }
     };
 
+    const prettifyEditorContents = () => {
+        // get current content
+        const unformattedContent = editorContentRef.current;
+
+        // format it
+        const formattedContent: string = prettier.format(unformattedContent, {
+            parser: 'babel',
+            plugins: [parser],
+            useTabs: false,
+            semi: true,
+            singleQuote: true
+        });
+
+        // set formatted output in the editor
+    };
+
     return (
-        <MonacoEditor
-            value={initialValue}
-            onChange={editorOnChangeHandler}
-            height="400px"
-            language="javascript"
-            theme="vs-dark"
-            options={{
-                wordWrap: 'on',
-                showUnused: false,
-                folding: false,
-                lineNumbersMinChars: 3,
-                fontSize: 15,
-                fontLigatures: true,
-                scrollBeyondLastLine: false,
-                automaticLayout: true
-            }}
-        />
+        <div>
+            <button onClick={prettifyEditorContents}>prettify</button>
+            <MonacoEditor
+                value={initialValue}
+                onChange={editorOnChangeHandler}
+                onMount={(editor, monaco) => {
+                    editorRef.current = editor;
+                    console.log(editorRef.current);
+                }}
+                height="400px"
+                language="javascript"
+                theme="vs-dark"
+                options={{
+                    tabSize: 2,
+                    wordWrap: 'on',
+                    showUnused: false,
+                    folding: false,
+                    lineNumbersMinChars: 3,
+                    fontSize: 15,
+                    fontLigatures: true,
+                    scrollBeyondLastLine: false,
+                    automaticLayout: true
+                }}
+            />
+        </div>
     );
 };
 
