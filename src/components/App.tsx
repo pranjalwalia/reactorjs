@@ -73,7 +73,14 @@ export const App: React.FC<{}> = (): ReactElement | null => {
     return (
         <div>
             <div>
-                <Editor />
+                <Editor
+                    initialValue="import { render } from 'react-dom';
+                                render(
+                                    <h1>Hello, world!</h1>,
+                                    document.getElementById('root')
+                                );"
+                    executableCodeOnChangeHandler={(value: string): void => setInputCode(value)}
+                />
             </div>
             <textarea
                 ref={inputCodeRef}
