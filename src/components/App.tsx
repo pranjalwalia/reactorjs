@@ -3,7 +3,6 @@ import React, { ReactElement, useState, useEffect, useRef } from 'react';
 import { initializeService, transpile, buildSystem } from '../services/engine/buildEngine';
 import { unpkgBypassPathPlugin } from '../plugins/unkpg-bypass-path-plugin';
 import { unpkgBypassFetchPlugin } from '../plugins/unpkg-bypass-fetch-plugin';
-
 import { iFrameIdentifier } from '../utils/sandboxNameGenerator';
 
 import Editor from '../containers/CodeEditor';
@@ -12,6 +11,7 @@ export const App: React.FC<{}> = (): ReactElement | null => {
     const [inputCode, setInputCode] = useState<string>('');
     const [transpiledCode, setTranspiledCode] = useState<string>('');
     const [bundledCode, setBundledCode] = useState<string | null>('');
+
     const inputCodeRef = useRef<any>();
     const iFrameRef = useRef<any>();
 
@@ -79,7 +79,7 @@ export const App: React.FC<{}> = (): ReactElement | null => {
                                     <h1>Hello, world!</h1>,
                                     document.getElementById('root')
                                 );"
-                    executableCodeOnChangeHandler={(value: string): void => setInputCode(value)}
+                    executableCodeOnChangeHandler={(value: string) => setInputCode(value)}
                 />
             </div>
             <textarea

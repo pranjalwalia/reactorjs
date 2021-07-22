@@ -1,79 +1,65 @@
-import MonacoEditor from '@monaco-editor/react';
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
-import { useRef } from 'react';
+import Editor, { Monaco } from '@monaco-editor/react';
 import prettier from 'prettier';
 import parser from 'prettier/parser-babel';
+import { useRef } from 'react';
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import { IEditorProps } from '../interfaces/Editor';
 
-export interface IEditorProps {
-    initialValue: string;
-    executableCodeOnChangeHandler(value: string): void;
-}
-
-const Editor: React.FC<IEditorProps> = ({
+const CodeEditor: React.FC<IEditorProps> = ({
     initialValue,
     executableCodeOnChangeHandler
 }: IEditorProps) => {
-    const editorContentRef = useRef<any>();
-    // const editorRef = useRef<any>();
+    const monacoRef = useRef<any>(null);
 
-    // const editorOnChangeHandler = (
-    //     value: string | undefined,
-    //     ev: monaco.editor.IModelContentChangedEvent
-    // ) => {
-    //     if (value) {
-    //         editorContentRef.current = value;
-    //         executableCodeOnChangeHandler(value);
-    //     }
-    // };
+    const handleEditorWillMount = (monaco: any): void => {
+        monaco.languages.typescript.javascriptDefaults.setEagerModelSync(true);
+    };
 
-    const prettifyEditorContents = (e: any) => {
-        console.log('clicked', e);
-        // get current content
-        const unformattedContent = editorContentRef.current;
-        console.log(unformattedContent);
+    const handleEditorChange = (
+        value: string | undefined,
+        event: monaco.editor.IModelContentChangedEvent
+    ): void => {
+        if (value) {
+            executableCodeOnChangeHandler(value);
+        }
+    };
 
-        // format it
-        const formattedContent: string = prettier.format(unformattedContent, {
-            parser: 'babel',
-            plugins: [parser],
-            useTabs: false,
-            semi: true,
-            singleQuote: true
-        });
-        console.log('format >> ', formattedContent);
+    const handleEditorDidMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco) => {
+        monacoRef.current = editor;
+        monacoRef.current.updateOptions({ tabSize: 2 });
+    };
 
-        // set formatted output in the editor
-        // editorContentRef.current = formattedContent;
-        // executableCodeOnChangeHandler(formattedContent);
+    const prettiyPrintEditorContents = async (): Promise<void> => {
+        const rawCode = monacoRef.current.getModel().getValue();
+
+        const formatted = await prettier
+            .format(rawCode, {
+                parser: 'babel',
+                plugins: [parser],
+                useTabs: false,
+                semi: true,
+                singleQuote: true,
+                trailingComma: 'none',
+                jsxBracketSameLine: true
+            })
+            .replace(/\n$/, '');
+
+        monacoRef.current.setValue(formatted);
     };
 
     return (
         <div>
-            <button onClick={prettifyEditorContents}>prettify</button>
-            <MonacoEditor
-                value={initialValue}
-                // onChange={editorOnChangeHandler}
-                // onMount={(editor, monaco) => {
-                //     editorRef.current = editor;
-                //     console.log(editorRef.current);
-                // }}
-                height="400px"
-                language="javascript"
-                theme="vs-dark"
-                options={{
-                    // tabSize: 2,
-                    wordWrap: 'on',
-                    showUnused: false,
-                    folding: false,
-                    lineNumbersMinChars: 3,
-                    fontSize: 15,
-                    fontLigatures: true,
-                    scrollBeyondLastLine: false,
-                    automaticLayout: true
-                }}
+            <button onClick={prettiyPrintEditorContents}>prettify</button>
+            <Editor
+                height="90vh"
+                defaultLanguage="javascript"
+                defaultValue={initialValue}
+                beforeMount={handleEditorWillMount}
+                onMount={handleEditorDidMount}
+                onChange={handleEditorChange}
             />
         </div>
     );
 };
 
-export default Editor;
+export default CodeEditor;
