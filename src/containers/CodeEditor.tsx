@@ -1,10 +1,16 @@
 import './styles/CodeEditor.css';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
-import Editor, { Monaco } from '@monaco-editor/react';
+
+import Editor from '@monaco-editor/react';
 import prettier from 'prettier';
 import parser from 'prettier/parser-babel';
+
 import { useRef } from 'react';
 import { IEditorProps } from '../interfaces/Editor';
+
+import MonacoJSXHighlighter from 'monaco-jsx-highlighter';
+import { parse } from '@babel/parser';
+import traverse from '@babel/traverse';
 
 const CodeEditor: React.FC<IEditorProps> = ({
     initialValue,
@@ -25,9 +31,22 @@ const CodeEditor: React.FC<IEditorProps> = ({
         }
     };
 
-    const handleEditorDidMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco) => {
+    const babelParse = (code: string) =>
+        parse(code, {
+            sourceType: 'module',
+            plugins: ['jsx']
+        });
+
+    const handleEditorDidMount = async (
+        editor: monaco.editor.IStandaloneCodeEditor,
+        monaco: unknown
+    ) => {
         monacoRef.current = editor;
         monacoRef.current.updateOptions({ tabSize: 2 });
+
+        const monacoJSXHighlighter = new MonacoJSXHighlighter(monaco, babelParse, traverse, editor);
+        monacoJSXHighlighter.highLightOnDidChangeModelContent();
+        monacoJSXHighlighter.addJSXCommentCommand();
     };
 
     const prettiyPrintEditorContents = async (): Promise<void> => {
@@ -51,7 +70,7 @@ const CodeEditor: React.FC<IEditorProps> = ({
     return (
         <div className="editor-container">
             <button
-                // style={{ margin: 8, borderRadius: 5 }}
+                style={{ margin: 8, borderRadius: 5 }}
                 className="button button-format is-primary is-small"
                 onClick={prettiyPrintEditorContents}>
                 prettify

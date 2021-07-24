@@ -15,8 +15,3 @@
 .editor-container:hover .button-format {
     opacity: 1;
 }
-
-.button-format {
-    margin: 8;
-    border-radius: 5;
-}
