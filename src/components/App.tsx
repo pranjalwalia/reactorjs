@@ -1,3 +1,4 @@
+import 'bulmaswatch/superhero/bulmaswatch.min.css';
 import React, { ReactElement, useState, useEffect, useRef } from 'react';
 
 import { initializeService, transpile, buildSystem } from '../services/engine/buildEngine';

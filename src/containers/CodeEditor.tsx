@@ -1,8 +1,9 @@
+import './styles/CodeEditor.css';
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import Editor, { Monaco } from '@monaco-editor/react';
 import prettier from 'prettier';
 import parser from 'prettier/parser-babel';
 import { useRef } from 'react';
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { IEditorProps } from '../interfaces/Editor';
 
 const CodeEditor: React.FC<IEditorProps> = ({
@@ -48,10 +49,16 @@ const CodeEditor: React.FC<IEditorProps> = ({
     };
 
     return (
-        <div>
-            <button onClick={prettiyPrintEditorContents}>prettify</button>
+        <div className="editor-container">
+            <button
+                // style={{ margin: 8, borderRadius: 5 }}
+                className="button button-format is-primary is-small"
+                onClick={prettiyPrintEditorContents}>
+                prettify
+            </button>
             <Editor
                 height="90vh"
+                theme="vs-dark"
                 defaultLanguage="javascript"
                 defaultValue={initialValue}
                 beforeMount={handleEditorWillMount}
