@@ -1,8 +1,11 @@
+import './styles/ResizableWrapper.css';
+
 import { ReactElement, useState } from 'react';
 import { engineGenerateBundledCode } from '../services/engine/buildEngine';
 
-import Preview from '../components/Preview';
+import Preview from './Preview';
 import Editor from '../containers/CodeEditor';
+import ResizableWrapper from './ResizableWrapper';
 
 export const ExecutionCell: React.FC<{}> = (): ReactElement | null => {
     const [inputCode, setInputCode] = useState<string>('');
@@ -17,19 +20,19 @@ export const ExecutionCell: React.FC<{}> = (): ReactElement | null => {
     };
 
     return (
-        <div>
+        <ResizableWrapper direction="vertical">
             <div>
                 <Editor
-                    initialValue="import React from 'react'; 
+                    initialValue="import React from 'react';
                                 import { render } from 'react-dom';
                                 render(<h1>Hello, world!</h1>,document.getElementById('root'));"
                     executableCodeOnChangeHandler={(value: string) => setInputCode(value)}
                 />
+                <div>
+                    <button onClick={bundlerInitialize}>Submit</button>
+                </div>
+                <Preview bundledCode={bundledCode ? bundledCode : ''} />
             </div>
-            <div>
-                <button onClick={bundlerInitialize}>Submit</button>
-            </div>
-            <div>{bundledCode ? <Preview bundledCode={bundledCode} /> : null}</div>
-        </div>
+        </ResizableWrapper>
     );
 };
