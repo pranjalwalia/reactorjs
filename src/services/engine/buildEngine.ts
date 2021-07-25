@@ -31,6 +31,7 @@ export const engineGenerateBundledCode = async (rawCode: string): Promise<string
 };
 
 export const initializeService = async (): Promise<void> => {
+    console.log('starting engines');
     await esbuild.initialize(engineConfig);
 };
 
