@@ -10,8 +10,13 @@ const Preview: React.FC<IPreviewPayload> = ({ bundledCode }: IPreviewPayload) =>
     const iFrameRef = useRef<any>();
 
     useEffect(() => {
-        iFrameRef.current.srcdoc = iFramePayload;
-        iFrameRef.current.contentWindow.postMessage(bundledCode, '*');
+        if (iFrameRef.current) {
+            iFrameRef.current.srcdoc = iFramePayload;
+
+            setTimeout(() => {
+                iFrameRef.current?.contentWindow?.postMessage(bundledCode, '*');
+            }, 50);
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [bundledCode]);
 
@@ -43,7 +48,7 @@ const Preview: React.FC<IPreviewPayload> = ({ bundledCode }: IPreviewPayload) =>
             src="/frameSource.html"
             title={iFrameTitle}
             sandbox="allow-scripts"
-            srcDoc={iFramePayload!}
+            srcDoc={iFramePayload}
         />
     );
 };
