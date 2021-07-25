@@ -5,18 +5,28 @@ import Editor from '@monaco-editor/react';
 import prettier from 'prettier';
 import parser from 'prettier/parser-babel';
 
-import { useRef } from 'react';
+import { useState, useRef } from 'react';
 import { IEditorProps } from '../interfaces/Editor';
 
 import MonacoJSXHighlighter from 'monaco-jsx-highlighter';
 import { parse } from '@babel/parser';
 import traverse from '@babel/traverse';
 
+let monacoJSXHighlighter: any = null,
+    activateJSXHighlighting: any = null,
+    disposeJSXHighlighting: any = null,
+    activateJSXCommenting: any = null,
+    disposeJSXCommenting: any = null;
+
 const CodeEditor: React.FC<IEditorProps> = ({
     initialValue,
     executableCodeOnChangeHandler
 }: IEditorProps) => {
     const monacoRef = useRef<any>(null);
+
+    const [isEditorReady, setIsEditorReady] = useState(false);
+    const [isJSXHighlight, setIsJSXHighlight] = useState(false);
+    const [isJSXComment, setIsJSXComment] = useState(false);
 
     const handleEditorWillMount = (monaco: any): void => {
         monaco.languages.typescript.javascriptDefaults.setEagerModelSync(true);
@@ -31,12 +41,6 @@ const CodeEditor: React.FC<IEditorProps> = ({
         }
     };
 
-    const babelParse = (code: string) =>
-        parse(code, {
-            sourceType: 'module',
-            plugins: ['jsx']
-        });
-
     const handleEditorDidMount = async (
         editor: monaco.editor.IStandaloneCodeEditor,
         monaco: unknown
@@ -44,10 +48,51 @@ const CodeEditor: React.FC<IEditorProps> = ({
         monacoRef.current = editor;
         monacoRef.current.updateOptions({ tabSize: 2 });
 
-        const monacoJSXHighlighter = new MonacoJSXHighlighter(monaco, babelParse, traverse, editor);
-        monacoJSXHighlighter.highLightOnDidChangeModelContent();
-        monacoJSXHighlighter.addJSXCommentCommand();
+        const babelParse = (code: string) =>
+            parse(code, { sourceType: 'module', plugins: ['jsx'] });
+
+        monacoJSXHighlighter = new MonacoJSXHighlighter(monaco, babelParse, traverse, editor);
+        disposeJSXHighlighting = monacoJSXHighlighter.highLightOnDidChangeModelContent(
+            6000,
+            () => {}
+        );
+        disposeJSXCommenting = monacoJSXHighlighter.addJSXCommentCommand();
+
+        handleEditorDidMountBoilerPlate();
     };
+
+    const handleEditorDidMountBoilerPlate = () => {
+        activateJSXHighlighting = monacoJSXHighlighter.highLightOnDidChangeModelContent;
+        activateJSXCommenting = monacoJSXHighlighter.addJSXCommentCommand;
+
+        setIsEditorReady(true);
+        setIsJSXHighlight(true);
+        setIsJSXComment(true);
+    };
+
+    function toggleJSXHighLighting() {
+        const newIsJSXHighlight = !isJSXHighlight;
+        disposeJSXHighlighting && disposeJSXHighlighting();
+        disposeJSXHighlighting = null;
+        if (newIsJSXHighlight && activateJSXHighlighting) {
+            disposeJSXHighlighting = activateJSXHighlighting();
+            setIsJSXHighlight(true);
+        } else {
+            setIsJSXHighlight(false);
+        }
+    }
+
+    function toggleJSXcommenting() {
+        const newIsJSXComment = !isJSXComment;
+        disposeJSXCommenting && disposeJSXCommenting();
+        disposeJSXCommenting = null;
+        if (newIsJSXComment && activateJSXCommenting) {
+            disposeJSXCommenting = activateJSXCommenting();
+            setIsJSXComment(true);
+        } else {
+            setIsJSXComment(false);
+        }
+    }
 
     const prettiyPrintEditorContents = async (): Promise<void> => {
         const rawCode = monacoRef.current.getModel().getValue();
@@ -74,6 +119,24 @@ const CodeEditor: React.FC<IEditorProps> = ({
                 className="button button-format is-primary is-small"
                 onClick={prettiyPrintEditorContents}>
                 prettify
+            </button>
+            <button
+                style={{
+                    margin: 2,
+                    color: isJSXHighlight ? 'royalblue' : 'darkorange'
+                }}
+                onClick={toggleJSXHighLighting}
+                disabled={!isEditorReady}>
+                Toggle JSX highlighting
+            </button>
+            <button
+                style={{
+                    margin: 2,
+                    color: isJSXComment ? 'royalblue' : 'darkorange'
+                }}
+                onClick={toggleJSXcommenting}
+                disabled={!isEditorReady}>
+                Toggle JSX Commenting
             </button>
             <Editor
                 height="90vh"
