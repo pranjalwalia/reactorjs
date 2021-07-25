@@ -1,7 +1,34 @@
 import * as esbuild from 'esbuild-wasm';
 import { engineConfig } from '../../config/buildEngineConfig';
+import { unpkgBypassPathPlugin } from '../../plugins/unkpg-bypass-path-plugin';
+import { unpkgBypassFetchPlugin } from '../../plugins/unpkg-bypass-fetch-plugin';
 
 export const engine = esbuild;
+
+export const engineGenerateTranpiledCode = async (rawCode: string): Promise<string> => {
+    const res = await transpile(rawCode, {
+        loader: 'jsx',
+        target: 'es2015'
+    });
+    return res.code;
+};
+
+export const engineGenerateBundledCode = async (rawCode: string): Promise<string | null> => {
+    const res = await buildSystem({
+        entryPoints: ['index.js'],
+        bundle: true,
+        write: false,
+        plugins: [unpkgBypassPathPlugin(), unpkgBypassFetchPlugin(rawCode)],
+        define: {
+            global: 'window',
+            'process.env.NODE_ENV': '"production"'
+        }
+    });
+    if (res.outputFiles) {
+        return res.outputFiles[0].text;
+    }
+    return null;
+};
 
 export const initializeService = async (): Promise<void> => {
     await esbuild.initialize(engineConfig);
@@ -27,3 +54,5 @@ export const buildSystem = async (options: esbuild.BuildOptions): Promise<esbuil
         return err.message;
     }
 };
+
+//! todo: refactor into static methods of a service
