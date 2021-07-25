@@ -3,6 +3,16 @@ import { engineConfig } from '../../config/buildEngineConfig';
 
 export const engine = esbuild;
 
+export const generateTranpiledCode = async (rawCode: string): Promise<string> => {
+    const res = await transpile(rawCode, {
+        loader: 'jsx',
+        target: 'es2015'
+    });
+    return res.code;
+};
+
+export const generateBundledCode = async (rawCode: string) => {};
+
 export const initializeService = async (): Promise<void> => {
     await esbuild.initialize(engineConfig);
 };

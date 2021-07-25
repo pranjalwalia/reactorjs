@@ -14,29 +14,27 @@ export const App: React.FC<{}> = (): ReactElement | null => {
     const [transpiledCode, setTranspiledCode] = useState<string>('');
     const [bundledCode, setBundledCode] = useState<string | null>('');
 
-    // const inputCodeRef = useRef<any>();
     const iFrameRef = useRef<any>();
 
     useEffect((): void => {
         initializeService();
-        // inputCodeRef.current.focus();
     }, []);
 
     const bundlerInitialize = async (): Promise<void> => {
-        // if (!inputCodeRef.current.value || !inputCodeRef.current) {
-        //     return;
-        // }
-        try {
-            const { code } = await transpile(inputCode, {
-                loader: 'jsx',
-                target: 'es2015'
-            });
-            console.log('Successfully Transpiled cell');
-            setTranspiledCode(code);
-        } catch (err) {
-            console.log(`Transpilation failed with error: ${err.message}`);
+        if (!inputCode) {
             return;
         }
+        // try {
+        //     const { code } = await transpile(inputCode, {
+        //         loader: 'jsx',
+        //         target: 'es2015'
+        //     });
+        //     console.log('Successfully Transpiled cell');
+        //     setTranspiledCode(code);
+        // } catch (err) {
+        //     console.log(`Transpilation failed with error: ${err.message}`);
+        //     return;
+        // }
 
         try {
             const { outputFiles } = await buildSystem({
