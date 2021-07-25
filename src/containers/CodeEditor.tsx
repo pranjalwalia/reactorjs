@@ -139,7 +139,7 @@ const CodeEditor: React.FC<IEditorProps> = ({
                 Toggle JSX Commenting
             </button>
             <Editor
-                height="90vh"
+                height="50vh"
                 theme="vs-dark"
                 defaultLanguage="javascript"
                 defaultValue={initialValue}

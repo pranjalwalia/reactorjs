@@ -6,6 +6,7 @@ import { unpkgBypassPathPlugin } from '../plugins/unkpg-bypass-path-plugin';
 import { unpkgBypassFetchPlugin } from '../plugins/unpkg-bypass-fetch-plugin';
 import { iFrameIdentifier } from '../utils/sandboxNameGenerator';
 
+// import Preview from '../components/Preview';
 import Editor from '../containers/CodeEditor';
 
 export const App: React.FC<{}> = (): ReactElement | null => {
@@ -13,18 +14,18 @@ export const App: React.FC<{}> = (): ReactElement | null => {
     const [transpiledCode, setTranspiledCode] = useState<string>('');
     const [bundledCode, setBundledCode] = useState<string | null>('');
 
-    const inputCodeRef = useRef<any>();
+    // const inputCodeRef = useRef<any>();
     const iFrameRef = useRef<any>();
 
     useEffect((): void => {
         initializeService();
-        inputCodeRef.current.focus();
+        // inputCodeRef.current.focus();
     }, []);
 
     const bundlerInitialize = async (): Promise<void> => {
-        if (!inputCodeRef.current.value || !inputCodeRef.current) {
-            return;
-        }
+        // if (!inputCodeRef.current.value || !inputCodeRef.current) {
+        //     return;
+        // }
         try {
             const { code } = await transpile(inputCode, {
                 loader: 'jsx',
@@ -63,19 +64,26 @@ export const App: React.FC<{}> = (): ReactElement | null => {
             <div id="root">
                 <script>
                     window.addEventListener('message', (event) => {
-                        eval(event.data);
+                        try {
+                            eval(event.data);
+                          } catch (err) {
+                            const root = document.querySelector('#root');
+                            root.innerHTML = '<div style="color: red;"><h4>Runtime Error</h4>' + err + '</div>';
+                            console.error(err);
+                          }
                     }, false)
                 </script>
             </div>
         </body>
     </html>`;
+
     const iFrameTitle: string = `iframe-${iFrameIdentifier(iFramePayload.length % 123)}`;
 
     return (
         <div>
             <div>
                 <Editor
-                    initialValue="import { render } from 'react-dom';
+                    initialValue="import React from 'react'; import { render } from 'react-dom';
                                 render(
                                     <h1>Hello, world!</h1>,
                                     document.getElementById('root')
@@ -83,17 +91,18 @@ export const App: React.FC<{}> = (): ReactElement | null => {
                     executableCodeOnChangeHandler={(value: string) => setInputCode(value)}
                 />
             </div>
-            <textarea
+            {/* <textarea
                 ref={inputCodeRef}
                 value={inputCode}
                 onChange={(e) => {
                     setInputCode(e.target.value);
-                }}></textarea>
+                }}></textarea> */}
             <div>
                 <button onClick={bundlerInitialize}>Submit</button>
             </div>
             {/* <pre>{bundledCode}</pre> */}
             <div>
+                {/* {bundledCode ? <Preview bundledCode={bundledCode} /> : null} */}
                 <iframe
                     ref={iFrameRef}
                     src="/frameSource.html"
