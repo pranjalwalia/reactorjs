@@ -1,9 +1,7 @@
 import 'bulmaswatch/superhero/bulmaswatch.min.css';
 import React, { ReactElement, useState, useEffect, useRef } from 'react';
 
-import { initializeService, transpile, buildSystem } from '../services/engine/buildEngine';
-import { unpkgBypassPathPlugin } from '../plugins/unkpg-bypass-path-plugin';
-import { unpkgBypassFetchPlugin } from '../plugins/unpkg-bypass-fetch-plugin';
+import { initializeService, engineGenerateBundledCode } from '../services/engine/buildEngine';
 import { iFrameIdentifier } from '../utils/sandboxNameGenerator';
 
 // import Preview from '../components/Preview';
@@ -11,7 +9,7 @@ import Editor from '../containers/CodeEditor';
 
 export const App: React.FC<{}> = (): ReactElement | null => {
     const [inputCode, setInputCode] = useState<string>('');
-    const [transpiledCode, setTranspiledCode] = useState<string>('');
+    // const [transpiledCode, setTranspiledCode] = useState<string>('');
     const [bundledCode, setBundledCode] = useState<string | null>('');
 
     const iFrameRef = useRef<any>();
@@ -36,24 +34,26 @@ export const App: React.FC<{}> = (): ReactElement | null => {
         //     return;
         // }
 
-        try {
-            const { outputFiles } = await buildSystem({
-                entryPoints: ['index.js'],
-                bundle: true,
-                write: false,
-                plugins: [unpkgBypassPathPlugin(), unpkgBypassFetchPlugin(inputCode)],
-                define: {
-                    global: 'window',
-                    'process.env.NODE_ENV': '"production"'
-                }
-            });
-            setBundledCode(outputFiles !== null ? outputFiles![0].text : null);
-            iFrameRef.current.contentWindow.postMessage(outputFiles![0].text, '*');
-        } catch (err) {
-            // outputFiles is undefined
-            console.log(err.message);
-        }
+        // try {
+        //     const { outputFiles } = await buildSystem({
+        //         entryPoints: ['index.js'],
+        //         bundle: true,
+        //         write: false,
+        //         plugins: [unpkgBypassPathPlugin(), unpkgBypassFetchPlugin(inputCode)],
+        //         define: {
+        //             global: 'window',
+        //             'process.env.NODE_ENV': '"production"'
+        //         }
+        //     });
+        const res = await engineGenerateBundledCode(inputCode);
+        setBundledCode(res);
+        iFrameRef.current.contentWindow.postMessage(res, '*');
     };
+    // catch (err) {
+    //     // outputFiles is undefined
+    //     console.log(err.message);
+    // }
+    // };
 
     const iFramePayload: string = `
     <html>
