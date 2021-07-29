@@ -4557,10 +4557,10 @@ es6-symbol@^3.1.1, es6-symbol@~3.1.3:
     d "^1.0.1"
     ext "^1.1.2"
 
-esbuild-wasm@^0.12.4:
-  version "0.12.4"
-  resolved "https://registry.yarnpkg.com/esbuild-wasm/-/esbuild-wasm-0.12.4.tgz#e4cedb1dad45b0fdd9c01cc432e41e4c53a9f943"
-  integrity sha512-Bfol4mBg8YGQvAcIab7fZ9lzyfJZg4FKQRvIHVc5LqY5MYr1c755F8iL24PGdXqgEHoziBxIIUHH+nd0FvDKgA==
+esbuild-wasm@^0.12.17:
+  version "0.12.17"
+  resolved "https://registry.yarnpkg.com/esbuild-wasm/-/esbuild-wasm-0.12.17.tgz#81746040249ff7377281ffff40069a93585ca489"
+  integrity sha512-CNaEGf4IXGk1d6gDLJkhrhqivZJr6wFpWRFIVm0A5p79/GdUa3CEK/t+A6HWP+fcYpJwxCdWDMiYzeLd4+mWWg==
 
 escalade@^3.0.2, escalade@^3.1.1:
   version "3.1.1"
