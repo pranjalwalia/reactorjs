@@ -1,7 +1,8 @@
 import 'bulmaswatch/superhero/bulmaswatch.min.css';
-import { ExecutionCell } from '../containers/ExecutionCell';
 import { useState, useEffect } from 'react';
 import { initializeService } from '../services/engine/buildEngine';
+import { ExecutionCell } from '../containers/ExecutionCell';
+import TextEditor from '../components/TextEditor';
 
 export const App: React.FC<{}> = () => {
     const [buildEngineStatus, setBuildEngineStatus] = useState<boolean>(false);
@@ -18,7 +19,8 @@ export const App: React.FC<{}> = () => {
 
     return (
         <div>
-            {buildEngineStatus === true ? (
+            <TextEditor />
+            {/* {buildEngineStatus === true ? (
                 <>
                     <div>
                         <ExecutionCell />
@@ -26,7 +28,7 @@ export const App: React.FC<{}> = () => {
                 </>
             ) : (
                 <p>{JSON.stringify(errors)}</p>
-            )}
+            )} */}
         </div>
     );
 };
