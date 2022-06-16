@@ -1,55 +1,66 @@
-import { iFrameIdentifier } from '../utils/sandboxNameGenerator';
-import { useRef } from 'react';
-import { useEffect } from 'react';
+import '../styles/Preview.css';
+import { useRef, useEffect } from 'react';
 
-export interface IPreviewPayload {
-    bundledCode: string | null;
+export interface PreviewProps {
+    code: string;
+    bundlingStatus: string;
 }
 
-const Preview: React.FC<IPreviewPayload> = ({ bundledCode }: IPreviewPayload) => {
-    const iFrameRef = useRef<any>();
+const html = `
+<html>
+  <head>
+    <style>
+    html {
+      background-color: white
+    }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      const handleError = (err) => {
+        const root = document.querySelector('#root');
+        root.innerHTML = '<div style="color: red;"> <h4>Runtime Error</h4>' + err +  '</div>';
+        console.error(err)
+      }
+      window.addEventListener('error', (event)=>{
+        event.preventDefault();
+        handleError(event.error)
+      });
+      window.addEventListener('message', (event) => {
+        try {
+          eval(event.data);
+        } catch(err) {
+          handleError(err)
+        }
+      }, false);
+    </script>
+  </body>
+</html>
+`;
+
+const Preview: React.FC<PreviewProps> = ({ code, bundlingStatus }) => {
+    const iframe = useRef<any>();
 
     useEffect(() => {
-        if (iFrameRef.current) {
-            iFrameRef.current.srcdoc = iFramePayload;
+        iframe.current.srcdoc = html;
+        setTimeout(() => {
+            iframe.current.contentWindow.postMessage(code, '*');
+        }, 150);
+    }, [code]);
 
-            setTimeout(() => {
-                iFrameRef.current?.contentWindow?.postMessage(bundledCode, '*');
-            }, 50);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [bundledCode]);
-
-    const iFramePayload: string = `
-    <html>
-        <head></head>
-        <body>
-            <div id="root">
-                <script>
-                    window.addEventListener('message', (event) => {
-                        try {
-                            eval(event.data);
-                          } catch (err) {
-                            const root = document.querySelector('#root');
-                            root.innerHTML = '<div style="color: red;"><h4>Runtime Error</h4>' + err + '</div>';
-                            console.error(err);
-                          }
-                    }, false)
-                </script>
-            </div>
-        </body>
-    </html>`;
-
-    const iFrameTitle: string = `iframe-${iFrameIdentifier(bundledCode!.length % 123)}`;
+    console.log(bundlingStatus);
 
     return (
-        <iframe
-            ref={iFrameRef}
-            src="/frameSource.html"
-            title={iFrameTitle}
-            sandbox="allow-scripts"
-            srcDoc={iFramePayload}
-        />
+        <div className="preview-wrapper">
+            <iframe
+                title="preview"
+                ref={iframe}
+                sandbox="allow-scripts allow-modals"
+                srcDoc={html}
+            />
+            {bundlingStatus && <div className="preview-error">{bundlingStatus}</div>}
+        </div>
     );
 };
 

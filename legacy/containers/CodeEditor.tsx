@@ -14,9 +14,7 @@ import traverse from '@babel/traverse';
 
 let monacoJSXHighlighter: any = null,
     activateJSXHighlighting: any = null,
-    disposeJSXHighlighting: any = null,
-    activateJSXCommenting: any = null,
-    disposeJSXCommenting: any = null;
+    disposeJSXHighlighting: any = null;
 
 const CodeEditor: React.FC<IEditorProps> = ({
     initialValue,
@@ -26,7 +24,6 @@ const CodeEditor: React.FC<IEditorProps> = ({
 
     const [isEditorReady, setIsEditorReady] = useState(false);
     const [isJSXHighlight, setIsJSXHighlight] = useState(false);
-    const [isJSXComment, setIsJSXComment] = useState(false);
 
     const handleEditorWillMount = (monaco: any): void => {
         monaco.languages.typescript.javascriptDefaults.setEagerModelSync(true);
@@ -56,18 +53,15 @@ const CodeEditor: React.FC<IEditorProps> = ({
             6000,
             () => {}
         );
-        disposeJSXCommenting = monacoJSXHighlighter.addJSXCommentCommand();
 
         handleEditorDidMountBoilerPlate();
     };
 
     const handleEditorDidMountBoilerPlate = () => {
         activateJSXHighlighting = monacoJSXHighlighter.highLightOnDidChangeModelContent;
-        activateJSXCommenting = monacoJSXHighlighter.addJSXCommentCommand;
 
         setIsEditorReady(true);
         setIsJSXHighlight(true);
-        setIsJSXComment(true);
     };
 
     function toggleJSXHighLighting() {
@@ -79,18 +73,6 @@ const CodeEditor: React.FC<IEditorProps> = ({
             setIsJSXHighlight(true);
         } else {
             setIsJSXHighlight(false);
-        }
-    }
-
-    function toggleJSXcommenting() {
-        const newIsJSXComment = !isJSXComment;
-        disposeJSXCommenting && disposeJSXCommenting();
-        disposeJSXCommenting = null;
-        if (newIsJSXComment && activateJSXCommenting) {
-            disposeJSXCommenting = activateJSXCommenting();
-            setIsJSXComment(true);
-        } else {
-            setIsJSXComment(false);
         }
     }
 
@@ -114,39 +96,40 @@ const CodeEditor: React.FC<IEditorProps> = ({
 
     return (
         <div className="editor-container">
-            <button
-                style={{ margin: 8, borderRadius: 5 }}
-                className="button button-format is-primary is-small"
-                onClick={prettiyPrintEditorContents}>
-                prettify
-            </button>
-            <button
-                style={{
-                    margin: 2,
-                    color: isJSXHighlight ? 'royalblue' : 'darkorange'
-                }}
-                onClick={toggleJSXHighLighting}
-                disabled={!isEditorReady}>
-                Toggle JSX highlighting
-            </button>
-            <button
-                style={{
-                    margin: 2,
-                    color: isJSXComment ? 'royalblue' : 'darkorange'
-                }}
-                onClick={toggleJSXcommenting}
-                disabled={!isEditorReady}>
-                Toggle JSX Commenting
-            </button>
-            <Editor
-                height="50vh"
+            <div style={{ display: 'flex', flexDirection: 'row' }}>
+                <button
+                    style={{ margin: 8, borderRadius: 5 }}
+                    className="button button-format is-primary is-small"
+                    onClick={prettiyPrintEditorContents}>
+                    prettify
+                </button>
+                <button
+                    style={{ margin: 8, borderRadius: 5, top: '3rem' }}
+                    className="button button-format is-primary is-small"
+                    onClick={toggleJSXHighLighting}
+                    disabled={!isEditorReady}>
+                    Toggle JSX highlighting
+                </button>
+            </div>
+            {/* <Editor
+                height="100%"
                 theme="vs-dark"
                 defaultLanguage="javascript"
                 defaultValue={initialValue}
                 beforeMount={handleEditorWillMount}
                 onMount={handleEditorDidMount}
                 onChange={handleEditorChange}
-            />
+                options={{
+                    wordWrap: 'on',
+                    minimap: { enabled: false },
+                    showUnused: false,
+                    folding: false,
+                    lineNumbersMinChars: 3,
+                    fontSize: 16,
+                    scrollBeyondLastLine: false,
+                    automaticLayout: true
+                }}
+            /> */}
         </div>
     );
 };

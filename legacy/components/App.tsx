@@ -20,9 +20,7 @@ export const App: React.FC<{}> = () => {
         <div>
             {buildEngineStatus === true ? (
                 <>
-                    <div>
-                        <ExecutionCell />
-                    </div>
+                    <ExecutionCell />
                 </>
             ) : (
                 <p>{JSON.stringify(errors)}</p>

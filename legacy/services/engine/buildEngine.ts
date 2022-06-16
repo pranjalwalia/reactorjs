@@ -4,7 +4,6 @@ import { unpkgBypassPathPlugin } from '../../plugins/unkpg-bypass-path-plugin';
 import { unpkgBypassFetchPlugin } from '../../plugins/unpkg-bypass-fetch-plugin';
 
 export const engine = esbuild;
-export const BUNDLER_UNDEFINED_ERROR = 'Something went wrong while generating bundled code';
 
 export const engineGenerateTranpiledCode = async (rawCode: string): Promise<string> => {
     const res = await transpile(rawCode, {
@@ -14,34 +13,25 @@ export const engineGenerateTranpiledCode = async (rawCode: string): Promise<stri
     return res.code;
 };
 
-export interface IBundlerResponse {
-    code: string;
-    error: string;
-}
-
-export const engineGenerateBundledCode = async (rawCode: string): Promise<IBundlerResponse> => {
-    try {
-        const res = await buildSystem({
-            entryPoints: ['index.js'],
-            bundle: true,
-            write: false,
-            plugins: [unpkgBypassPathPlugin(), unpkgBypassFetchPlugin(rawCode)],
-            define: {
-                global: 'window',
-                'process.env.NODE_ENV': '"production"'
-            }
-        });
-        return res.outputFiles
-            ? { code: res.outputFiles[0].text, error: '' }
-            : { code: '', error: BUNDLER_UNDEFINED_ERROR };
-    } catch (err: any) {
-        console.log(err.message);
-        return { code: '', error: err?.message ? err?.message : BUNDLER_UNDEFINED_ERROR };
+export const engineGenerateBundledCode = async (rawCode: string): Promise<string | null> => {
+    const res = await buildSystem({
+        entryPoints: ['index.js'],
+        bundle: true,
+        write: false,
+        plugins: [unpkgBypassPathPlugin(), unpkgBypassFetchPlugin(rawCode)],
+        define: {
+            global: 'window',
+            'process.env.NODE_ENV': '"production"'
+        }
+    });
+    if (res.outputFiles) {
+        return res.outputFiles[0].text;
     }
+    return null;
 };
 
 export const initializeService = async (): Promise<void> => {
-    console.log('starting wasm engine');
+    console.log('starting engines');
     await esbuild.initialize(engineConfig);
 };
 
