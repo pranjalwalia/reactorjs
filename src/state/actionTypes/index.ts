@@ -6,3 +6,4 @@ export enum ActionType {
 }
 
 export type CellType = 'text' | 'code';
+export type CellMovementDirection = 'up' | 'down';
