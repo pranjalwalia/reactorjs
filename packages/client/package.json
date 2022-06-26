@@ -68,6 +68,5 @@
         "redux": "4.0.5",
         "redux-thunk": "2.3.0",
         "typescript": "^4.3.2"
-    },
-    "gitHead": "9de6e2ffb047a0c567a3a276eacab9ff0ab4c241"
+    }
 }
