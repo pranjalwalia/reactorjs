@@ -1,6 +1,6 @@
 import { Dispatch } from 'redux';
 
-import { saveCells } from '../actionCreators';
+import { saveCellsAction } from '../actionCreators';
 import { Action } from '../actions';
 import { CellActionType } from '../actionTypes';
 import { RootState } from '../reducers';
@@ -29,8 +29,8 @@ const persistMiddleware = ({ dispatch, getState }: Args): ReturnType => {
                 }
 
                 timer = setTimeout(() => {
-                    saveCells()(dispatch, getState);
-                }, 1000);
+                    saveCellsAction()(dispatch, getState);
+                }, 2000);
             }
         };
     };

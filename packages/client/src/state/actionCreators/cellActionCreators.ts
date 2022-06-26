@@ -57,7 +57,7 @@ export const insertCellAfterAction = (
     }
 });
 
-export const fetchCells = () => {
+export const fetchCellsAction = () => {
     return async (dispatch: Dispatch<Action>): Promise<void> => {
         dispatch({ type: CellActionType.FETCH_CELLS });
 
@@ -79,7 +79,7 @@ export const fetchCells = () => {
     };
 };
 
-export const saveCells = () => {
+export const saveCellsAction = () => {
     return async (
         dispatch: Dispatch<Action>,
         getState: () => RootState
@@ -91,7 +91,7 @@ export const saveCells = () => {
         const cells = order.map((id) => data[id]);
 
         try {
-            await axios.post('cells', { cells });
+            await axios.post('/cells', { cells });
         } catch (error: any) {
             dispatch({
                 type: CellActionType.SAVE_CELLS_ERROR,

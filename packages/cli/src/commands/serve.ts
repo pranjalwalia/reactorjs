@@ -2,8 +2,8 @@ import path from 'path';
 import { Command } from 'commander';
 import { serve } from '@reactor/daemon';
 
-const isProduction = false;
-// const isProduction = process.env.NODE_ENV === 'production';
+// const isProduction = true;
+const isProduction = process.env.NODE_ENV === 'production';
 
 export const serveCommand = new Command()
     .command('serve [filename]')

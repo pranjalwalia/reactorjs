@@ -22,30 +22,56 @@ const initialState: CellsState = {
 const reducer = produce(
     (state: CellsState = initialState, action: Action): CellsState => {
         switch (action.type) {
-            case CellActionType.UPDATE_CELL:
+            case CellActionType.SAVE_CELLS_ERROR: {
+                state.error = action.payload;
+
+                return state;
+            }
+
+            case CellActionType.FETCH_CELLS: {
+                state.loading = true;
+                state.error = null;
+
+                return state;
+            }
+
+            case CellActionType.FETCH_CELLS_COMPLETE: {
+                state.order = action.payload.map((cell) => cell.id);
+                state.data = action.payload.reduce((acc, cell) => {
+                    acc[cell.id] = cell;
+                    return acc;
+                }, {} as CellsState['data']);
+
+                return state;
+            }
+
+            case CellActionType.FETCH_CELLS_ERROR: {
+                state.loading = false;
+                state.error = action.payload;
+
+                return state;
+            }
+
+            case CellActionType.UPDATE_CELL: {
                 const { id, content } = action.payload;
                 state.data[id].content = content;
 
                 return state;
+            }
 
-            case CellActionType.DELETE_CELL:
+            case CellActionType.DELETE_CELL: {
                 delete state.data[action.payload];
-                state.order = state.order.filter(
-                    (id) => id !== action.payload
-                );
+                state.order = state.order.filter((id) => id !== action.payload);
 
                 return state;
+            }
 
-            case CellActionType.MOVE_CELL:
+            case CellActionType.MOVE_CELL: {
                 const { direction, id: cellId } = action.payload;
                 const index = state.order.findIndex((id) => id === cellId);
 
-                const targetIndex =
-                    direction === 'up' ? index - 1 : index + 1;
-                if (
-                    targetIndex < 0 ||
-                    targetIndex > state.order.length - 1
-                ) {
+                const targetIndex = direction === 'up' ? index - 1 : index + 1;
+                if (targetIndex < 0 || targetIndex > state.order.length - 1) {
                     return state;
                 }
 
@@ -53,8 +79,9 @@ const reducer = produce(
                 state.order[targetIndex] = action.payload.id;
 
                 return state;
+            }
 
-            case CellActionType.INSERT_CELL_AFTER:
+            case CellActionType.INSERT_CELL_AFTER: {
                 const cell: Cell = {
                     content: '',
                     type: action.payload.type,
@@ -73,6 +100,8 @@ const reducer = produce(
                     state.order.splice(foundIndex + 1, 0, cell.id);
                 }
                 return state;
+            }
+
             default:
                 return state;
         }
