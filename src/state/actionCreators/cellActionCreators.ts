@@ -1,15 +1,17 @@
-import {
-    CellActionType,
-    CellMovementDirection,
-    CellType
-} from '../actionTypes';
+import { Dispatch } from 'redux';
+import { RootState } from '../reducers';
+import { Cell, CellMovementDirection, CellType } from '../cell';
+import { CellActionType } from '../actionTypes';
 
 import {
+    Action,
     MoveCellAction,
     DeleteCellAction,
     UpdateCellAction,
     InsertCellAfterAction
 } from '../actions';
+
+import axios from 'axios';
 
 export const updateCellAction = (
     id: string,
@@ -54,3 +56,49 @@ export const insertCellAfterAction = (
         type
     }
 });
+
+export const fetchCells = () => {
+    return async (dispatch: Dispatch<Action>): Promise<void> => {
+        dispatch({ type: CellActionType.FETCH_CELLS });
+
+        try {
+            const { data }: { data: Cell[] } = await axios.get('/cells');
+
+            dispatch({
+                type: CellActionType.FETCH_CELLS_COMPLETE,
+                payload: data
+            });
+        } catch (error: any) {
+            dispatch({
+                type: CellActionType.FETCH_CELLS_ERROR,
+                payload: error.message
+                    ? error.message
+                    : 'FETCH_CELLS_ERROR: ' + error
+            });
+        }
+    };
+};
+
+export const saveCells = () => {
+    return async (
+        dispatch: Dispatch<Action>,
+        getState: () => RootState
+    ): Promise<void> => {
+        const {
+            cells: { data, order }
+        } = getState();
+
+        const cells = order.map((id) => data[id]);
+
+        try {
+            await axios.post('cells', { cells });
+        } catch (error: any) {
+            dispatch({
+                type: CellActionType.SAVE_CELLS_ERROR,
+                payload: error.message
+                    ? error.message
+                    : 'SAVE_CELLS_ERROR: ' + error
+            });
+        }
+    };
+};

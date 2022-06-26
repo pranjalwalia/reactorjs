@@ -1,9 +1,5 @@
-import {
-    CellActionType,
-    CellMovementDirection,
-    CellType
-} from '../actionTypes';
-
+import { CellActionType } from '../actionTypes';
+import { Cell, CellMovementDirection, CellType } from '../cell';
 export interface MoveCellAction {
     type: CellActionType.MOVE_CELL;
     payload: {
@@ -33,8 +29,31 @@ export interface InsertCellAfterAction {
     };
 }
 
+export interface FetchCellsAction {
+    type: CellActionType.FETCH_CELLS;
+}
+
+export interface FetchCellsCompleteAction {
+    type: CellActionType.FETCH_CELLS_COMPLETE;
+    payload: Cell[];
+}
+
+export interface FetchCellsErrorAction {
+    type: CellActionType.FETCH_CELLS_ERROR;
+    payload: string;
+}
+
+export interface SaveCellsErrorAction {
+    type: CellActionType.SAVE_CELLS_ERROR;
+    payload: string;
+}
+
 export type Action =
     | MoveCellAction
     | DeleteCellAction
     | UpdateCellAction
-    | InsertCellAfterAction;
+    | InsertCellAfterAction
+    | FetchCellsAction
+    | FetchCellsCompleteAction
+    | FetchCellsErrorAction
+    | SaveCellsErrorAction;
