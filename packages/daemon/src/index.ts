@@ -1,6 +1,7 @@
 import express from 'express';
-import { createProxyMiddleware } from 'http-proxy-middleware';
 import path from 'path';
+import cors from 'cors';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 import { createCellsRouter } from './routes/cells';
 
 export const serve = (
@@ -10,7 +11,7 @@ export const serve = (
     useProxy: boolean
 ) => {
     const app = express();
-
+    app.use(cors());
     app.use(createCellsRouter(filename, dir));
 
     if (useProxy) {
