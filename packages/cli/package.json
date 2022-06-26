@@ -1,6 +1,6 @@
 {
     "name": "@reactor/cli",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "author": "Pranjal Walia <pranjalwalia77@gmail.com>",
     "license": "MIT",
     "publishConfig": {
@@ -18,8 +18,8 @@
     },
     "keywords": [],
     "dependencies": {
-        "@reactor/client": "^1.0.0",
-        "@reactor/daemon": "^1.0.0",
+        "@reactor/client": "^1.0.1",
+        "@reactor/daemon": "^1.0.1",
         "commander": "^9.3.0"
     },
     "devDependencies": {
