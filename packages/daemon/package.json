@@ -1,6 +1,6 @@
 {
     "name": "@reactorjs/daemon",
-    "version": "1.0.2",
+    "version": "1.0.3-alpha.0",
     "author": "Pranjal Walia <pranjalwalia77@gmail.com>",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -17,7 +17,7 @@
         "prepublishOnly": "tsc"
     },
     "dependencies": {
-        "@reactorjs/client": "^1.0.2",
+        "@reactorjs/client": "^1.0.3-alpha.0",
         "cors": "^2.8.5",
         "express": "^4.18.1",
         "http-proxy-middleware": "^2.0.6"
