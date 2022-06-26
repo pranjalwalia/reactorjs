@@ -6,7 +6,9 @@
     "publishConfig": {
         "access": "public"
     },
-    "bin": "dist/index.js",
+    "bin": {
+        "reactor": "dist/index.js"
+    },
     "files": [
         "dist"
     ],
