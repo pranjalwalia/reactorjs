@@ -46,7 +46,22 @@ export const ExecutionCell: React.FC<CodeCellProps> = ({
                             onChange={(value) =>
                                 updateCellAction(cell.id, value)
                             }
-                            initialValue="// To show content you can use show() function ex. show(<h1>Hello World</h1>), PS: react and react-dom are already imported for you."
+                            initialValue="// To show content you can use show() function ex. show(<h1>Hello World</h1>)
+                            
+                            Here's a sample component:
+                            import { useState, useEffect } from 'react';
+                            const Comp = () => {
+                            const [time, setTime] = useState(new Date());
+                            useEffect(() => {
+                                setInterval(() => {
+                                setTime(new Date());
+                                }, 1000);
+                            }, []);
+                            return <h1>{time.toLocaleString()} </h1>;
+                            };
+
+                            show(<Comp />);
+                            "
                         />
                     </ResizableWrapper>
                     {!bundle || bundle.loading ? (
