@@ -46,10 +46,7 @@ export const ExecutionCell: React.FC<CodeCellProps> = ({
                             onChange={(value) =>
                                 updateCellAction(cell.id, value)
                             }
-                            initialValue="import React from 'react';
-                                        import { render } from 'react-dom';
-                                        render(<h1>Hello, world!</h1>,document.getElementById('root'));
-                                        // To show content you can use show() function ex. show( <h1>Hello World</h1> )"
+                            initialValue="// To show content you can use show() function ex. show(<h1>Hello World</h1>), PS: react and react-dom are already imported for you."
                         />
                     </ResizableWrapper>
                     {!bundle || bundle.loading ? (
