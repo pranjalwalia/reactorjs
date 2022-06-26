@@ -26,5 +26,6 @@
         "@types/node": "^18.0.0",
         "esbuild": "0.8.43",
         "typescript": "^4.7.4"
-    }
+    },
+    "gitHead": "cdfcee4c508c97516210d9602d6ffd1956488cdc"
 }
