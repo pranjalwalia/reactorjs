@@ -18,7 +18,7 @@
     },
     "keywords": [],
     "dependencies": {
-        "@reactor/client": "0.1.1",
+        "@reactor/client": "^1.0.0",
         "@reactor/daemon": "^1.0.0",
         "commander": "^9.3.0"
     },
