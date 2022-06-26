@@ -1,54 +1,58 @@
 import '../styles/ExecutionCell.css';
-import { ReactElement, useState, useEffect } from 'react';
-import { engineGenerateBundledCode, IBundlerResponse } from '../services/engine/buildEngine';
+import { ReactElement, useEffect } from 'react';
 import Preview from './Preview';
 import Editor from '../components/CodeEditor';
 import ResizableWrapper from './ResizableWrapper';
 
-export const ExecutionCell: React.FC<{}> = (): ReactElement | null => {
-    const [inputCode, setInputCode] = useState<string>('');
-    const [bundledCode, setBundledCode] = useState<string | null>('');
-    const [errors, setErrors] = useState<string>('');
+import { Cell } from '../state';
+import { useActions, useTypedSelector, useCumulativeCode } from '../hooks';
+interface CodeCellProps {
+    cell: Cell;
+}
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const bundlerInitialize = async (): Promise<void> => {
-        if (!inputCode) {
-            return;
-        }
-        const res: IBundlerResponse = await engineGenerateBundledCode(inputCode);
-        setBundledCode(res.code);
-        setErrors(res.error);
-    };
+export const ExecutionCell: React.FC<CodeCellProps> = ({
+    cell
+}): ReactElement | null => {
+    const { updateCellAction, createBundleAction } = useActions();
+    const bundle = useTypedSelector(({ bundles }) => bundles[cell.id]);
+    const cumulativeCode = useCumulativeCode(cell.id);
 
     useEffect(() => {
-        if (!bundledCode) {
-            bundlerInitialize();
+        if (!bundle) {
+            createBundleAction(cell.id, cumulativeCode);
             return;
         }
 
         const timer = setTimeout(async () => {
-            bundlerInitialize();
-            // console.log('timed out bruh');
+            createBundleAction(cell.id, cumulativeCode);
         }, 1000);
         return () => {
             clearTimeout(timer);
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [bundledCode, bundlerInitialize]);
+        // eslint-disable-next-line
+    }, [cumulativeCode, cell.id, createBundleAction]);
 
     return (
         <>
             <ResizableWrapper direction="vertical">
-                <div style={{ height: 'calc(100% - 10px)', display: 'flex', flexDirection: 'row' }}>
+                <div
+                    style={{
+                        height: 'calc(100% - 10px)',
+                        display: 'flex',
+                        flexDirection: 'row'
+                    }}>
                     <ResizableWrapper direction="horizontal">
                         <Editor
-                            onChange={(value: string) => setInputCode(value)}
+                            onChange={(value) =>
+                                updateCellAction(cell.id, value)
+                            }
                             initialValue="import React from 'react';
-                                                     import { render } from 'react-dom';
-                                                     render(<h1>Hello, world!</h1>,document.getElementById('root'));"
+                                        import { render } from 'react-dom';
+                                        render(<h1>Hello, world!</h1>,document.getElementById('root'));
+                                        // To show content you can use show() function ex. show( <h1>Hello World</h1> )"
                         />
                     </ResizableWrapper>
-                    {!bundledCode ? (
+                    {!bundle || bundle.loading ? (
                         <div className="progress-wrapper">
                             <div className="progress-cover">
                                 <progress className="progress is-small is-primary">
@@ -57,42 +61,13 @@ export const ExecutionCell: React.FC<{}> = (): ReactElement | null => {
                             </div>
                         </div>
                     ) : (
-                        <Preview code={bundledCode} bundlingStatus={errors} />
+                        <Preview
+                            code={bundle.code}
+                            bundlingStatus={bundle.err}
+                        />
                     )}
                 </div>
             </ResizableWrapper>
-            {/* <div>
-                <button onClick={bundlerInitialize}>Submit</button>
-            </div> */}
         </>
     );
-
-    // return (
-    //     <>
-    //         <ResizableWrapper direction="vertical">
-    //             <div className="execution-cell">
-    //                 <ResizableWrapper direction="horizontal">
-    //                     <Editor
-    //                         initialValue="import React from 'react';
-    //                             import { render } from 'react-dom';
-    //                             render(<h1>Hello, world!</h1>,document.getElementById('root'));"
-    //                         onChange={(value: string) => setInputCode(value)}
-    //                     />
-    //                 </ResizableWrapper>
-    //             </div>
-    //             <div>
-    //                 <button onClick={bundlerInitialize}>Submit</button>
-    //             </div>
-    //             {bundledCode ? (
-    //                 <Preview code={bundledCode} bundlingStatus="success" />
-    //             ) : (
-    //                 <div className="progress-wrapper">
-    //                     <div className="progress-cover">
-    //                         <progress className="progress is-small is-primary">Loading</progress>
-    //                     </div>
-    //                 </div>
-    //             )}
-    //         </ResizableWrapper>
-    //     </>
-    // );
 };
