@@ -11,7 +11,6 @@ export interface TextEditorProps {
 const TextEditor: React.FC<TextEditorProps> = ({ cell }) => {
     const ref = useRef<HTMLDivElement | null>(null);
     const [editing, setEditing] = useState<boolean>(false);
-    const [value, setValue] = useState<string>('# Header');
     const { updateCellAction } = useActions();
 
     useEffect(() => {
@@ -51,7 +50,9 @@ const TextEditor: React.FC<TextEditorProps> = ({ cell }) => {
     return (
         <div className="text-editor card" onClick={() => setEditing(true)}>
             <div className="card-content">
-                <MDEditor.Markdown source={'# Click to edit'} />
+                <MDEditor.Markdown
+                    source={cell.content || 'Click to edit'}
+                />
             </div>
         </div>
     );
