@@ -1,6 +1,6 @@
 import path from 'path';
 import { Command } from 'commander';
-import { serve } from '@reactor/daemon';
+import { serve } from '@reactorjs/daemon';
 
 // const isProduction = true;
 const isProduction = process.env.NODE_ENV === 'production';

@@ -28,7 +28,9 @@ export const serve = (
         );
     } else {
         console.log('[INFO]: using static files, serving production build');
-        const packagePath = require.resolve('@reactor/client/build/index.html');
+        const packagePath = require.resolve(
+            '@reactorjs/client/build/index.html'
+        );
         app.use(express.static(path.dirname(packagePath)));
     }
 
