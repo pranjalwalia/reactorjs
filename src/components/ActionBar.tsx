@@ -1,5 +1,4 @@
 import '../styles/ActionBar.css';
-
 import { useActions } from '../hooks/useActions';
 
 export interface ActionBarProps {
