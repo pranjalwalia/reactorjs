@@ -14,10 +14,11 @@
     ],
     "scripts": {
         "start": "tsc --watch --preserveWatchOutput",
-        "prepublishOnly": "esbuild src/index.ts --platform=node --outfile=dist/index.js --bundle --minify --define:process.env.NODE_ENV=\"'production'\""
+        "prepublishOnly": "esbuild src/index.ts --platform=node --outfile=dist/index.js --bundle --minify --define:process.env.NODE_ENV=\\\"production\\\""
     },
     "keywords": [],
     "dependencies": {
+        "@reactor/client": "0.1.1",
         "@reactor/daemon": "^1.0.0",
         "commander": "^9.3.0"
     },
